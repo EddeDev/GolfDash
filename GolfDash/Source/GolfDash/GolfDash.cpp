@@ -1,8 +1,6 @@
 #include "GolfDashPCH.h"
 #include "GolfDash.h"
 
-#include "Shader.h"
-
 #include "glad/glad.h"
 
 namespace gd {
@@ -41,11 +39,53 @@ namespace gd {
 	void GolfDash::OnInit()
 	{
 		m_Shader = Ref<Shader>::Create("Assets/Shaders/VertexShader.glsl", "Assets/Shaders/FragmentShader.glsl");
+
+		PipelineConfig pipelineConfig;
+		pipelineConfig.Shader = m_Shader;
+		pipelineConfig.InputLayout = {
+			{ "a_Position", ShaderDataType::Vec3 } /* vec2? */
+		};
+		m_Pipeline = Ref<Pipeline>::Create(pipelineConfig);
+
+		struct Vertex
+		{
+			float PositionX;
+			float PositionY;
+			float PositionZ;
+		};
+
+		struct Index
+		{
+			uint32 V1;
+			uint32 V2;
+			uint32 V3;
+		};
+
+		Vertex vertices[4];
+		vertices[0] = { -0.5f, -0.5f, 0.0f };
+		vertices[1] = {  0.5f, -0.5f, 0.0f };
+		vertices[2] = {  0.5f,  0.5f, 0.0f };
+		vertices[3] = { -0.5f,  0.5f, 0.0f };
+
+		Index indices[2];
+		indices[0] = { 0, 1, 2 };
+		indices[1] = { 2, 3, 0 };
+
+		m_VertexBuffer = Ref<VertexBuffer>::Create(vertices, 4 * sizeof(Vertex));
+		m_IndexBuffer = Ref<IndexBuffer>::Create(indices, 2 * sizeof(Index));
 	}
 
 	void GolfDash::OnUpdate()
 	{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
+		m_VertexBuffer->Bind();
+		m_Pipeline->Bind();
+		m_IndexBuffer->Bind();
+
+		m_Shader->Bind();
+		m_Pipeline->DrawIndexed(m_IndexBuffer->GetCount());
 	}
 
 	void GolfDash::SetViewportSize(uint32 width, uint32 height)
@@ -55,7 +95,7 @@ namespace gd {
 			glViewport(0, 0, width, height);
 
 			m_ViewportWidth = width;
-			m_ViewportWidth = height;
+			m_ViewportHeight = height;
 		}
 	}
 

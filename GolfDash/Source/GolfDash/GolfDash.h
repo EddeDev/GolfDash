@@ -3,6 +3,9 @@
 #include "Window.h"
 
 #include "Shader.h"
+#include "Pipeline.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
 
 namespace gd {
 
@@ -22,6 +25,9 @@ namespace gd {
 		bool m_Running = true;
 
 		Ref<Shader> m_Shader;
+		Ref<Pipeline> m_Pipeline;
+		Ref<VertexBuffer> m_VertexBuffer;
+		Ref<IndexBuffer> m_IndexBuffer;
 
 		uint32 m_ViewportWidth = 0;
 		uint32 m_ViewportHeight = 0;
