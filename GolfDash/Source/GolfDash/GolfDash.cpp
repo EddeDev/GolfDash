@@ -49,9 +49,7 @@ namespace gd {
 
 		struct Vertex
 		{
-			float PositionX;
-			float PositionY;
-			float PositionZ;
+			glm::vec3 Position;
 		};
 
 		struct Index
@@ -62,17 +60,17 @@ namespace gd {
 		};
 
 		Vertex vertices[4];
-		vertices[0] = { -0.5f, -0.5f, 0.0f };
-		vertices[1] = {  0.5f, -0.5f, 0.0f };
-		vertices[2] = {  0.5f,  0.5f, 0.0f };
-		vertices[3] = { -0.5f,  0.5f, 0.0f };
+		vertices[0] = { { -0.5f, -0.5f, 0.0f } };
+		vertices[1] = { {  0.5f, -0.5f, 0.0f } };
+		vertices[2] = { {  0.5f,  0.5f, 0.0f } };
+		vertices[3] = { { -0.5f,  0.5f, 0.0f } };
 
 		Index indices[2];
 		indices[0] = { 0, 1, 2 };
 		indices[1] = { 2, 3, 0 };
 
-		m_VertexBuffer = Ref<VertexBuffer>::Create(vertices, 4 * sizeof(Vertex));
-		m_IndexBuffer = Ref<IndexBuffer>::Create(indices, 2 * sizeof(Index));
+		m_VertexBuffer = Ref<VertexBuffer>::Create(vertices, static_cast<uint32>(4 * sizeof(Vertex)));
+		m_IndexBuffer = Ref<IndexBuffer>::Create(indices, static_cast<uint32>(2 * sizeof(Index)));
 	}
 
 	void GolfDash::OnUpdate()

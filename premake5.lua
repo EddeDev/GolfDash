@@ -20,14 +20,18 @@ project "GolfDash"
     files
     {
         "%{prj.name}/Source/**.h",
-        "%{prj.name}/Source/**.cpp"
+        "%{prj.name}/Source/**.cpp",
+
+        "%{prj.name}/Libraries/glm/glm/**.hpp",
+        "%{prj.name}/Libraries/glm/glm/**.inl",
     }
     
     includedirs
     {
         "%{prj.name}/Source",
         "%{prj.name}/Libraries/GLFW/include",
-        "%{prj.name}/Libraries/Glad/include"
+        "%{prj.name}/Libraries/Glad/include",
+        "%{prj.name}/Libraries/glm"
     }
 
     links
