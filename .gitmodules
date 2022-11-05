@@ -1,0 +1,3 @@
+[submodule "GolfDash/Libraries/GLFW"]
+	path = GolfDash/Libraries/GLFW
+	url = https://github.com/EddeDev/glfw.git
