@@ -1,0 +1,89 @@
+#include "GolfDashPCH.h"
+#include "Shader.h"
+
+#include "FileUtils.h"
+
+#include <glad/glad.h>
+
+namespace gd {
+	
+	static uint32 CreateShader(uint32 type, const std::string& source)
+	{
+		uint32 shaderID = glCreateShader(type);
+
+		const char* sourceCStr = source.c_str();
+		glShaderSource(shaderID, 1, &sourceCStr, 0);
+		glCompileShader(shaderID);
+
+		int32 isCompiled = 0;
+		glGetShaderiv(shaderID, GL_COMPILE_STATUS, &isCompiled);
+		if (isCompiled == GL_FALSE)
+		{
+			int32 maxLength = 0;
+			glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &maxLength);
+
+			std::vector<char> infoLog(maxLength);
+			glGetShaderInfoLog(shaderID, maxLength, &maxLength, infoLog.data());
+			std::cerr << infoLog.data() << std::endl;
+
+			glDeleteShader(shaderID);
+		}
+
+		return shaderID;
+	}
+
+	Shader::Shader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
+	{
+		std::string vertexShaderSource = FileUtils::ReadFile(vertexShaderPath);
+		std::string fragmentShaderSource = FileUtils::ReadFile(fragmentShaderPath);
+
+		uint32 vertexShaderID = CreateShader(GL_VERTEX_SHADER, vertexShaderSource);
+		uint32 fragmentShaderID = CreateShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
+
+		m_ProgramID = glCreateProgram();
+		glAttachShader(m_ProgramID, vertexShaderID);
+		glAttachShader(m_ProgramID, fragmentShaderID);
+
+		glLinkProgram(m_ProgramID);
+
+		int32 isLinked = 0;
+		glGetProgramiv(m_ProgramID, GL_LINK_STATUS, &isLinked);
+		if (isLinked == GL_FALSE)
+		{
+			int32 maxLength = 0;
+			glGetProgramiv(m_ProgramID, GL_INFO_LOG_LENGTH, &maxLength);
+
+			std::vector<char> infoLog(maxLength);
+			glGetProgramInfoLog(m_ProgramID, maxLength, &maxLength, infoLog.data());
+			std::cerr << infoLog.data() << std::endl;
+
+			glDeleteProgram(m_ProgramID);
+
+			glDeleteShader(vertexShaderID);
+			glDeleteShader(fragmentShaderID);
+			return;
+		}
+
+		glDetachShader(m_ProgramID, vertexShaderID);
+		glDetachShader(m_ProgramID, fragmentShaderID);
+
+		glDeleteShader(vertexShaderID);
+		glDeleteShader(fragmentShaderID);
+	}
+
+	Shader::~Shader()
+	{
+		glDeleteProgram(m_ProgramID);
+	}
+
+	void Shader::Bind() const
+	{
+		glUseProgram(m_ProgramID);
+	}
+
+	void Shader::Unbind() const
+	{
+		glUseProgram(0);
+	}
+
+}

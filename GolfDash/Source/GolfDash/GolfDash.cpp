@@ -1,9 +1,9 @@
 #include "GolfDashPCH.h"
 #include "GolfDash.h"
 
-#include "glad/glad.h"
+#include "Shader.h"
 
-#include <iostream>
+#include "glad/glad.h"
 
 namespace gd {
 
@@ -20,10 +20,9 @@ namespace gd {
 		{
 			m_Running = false;
 		});
+		m_Window->AddFramebufferSizeCallback([this](uint32 width, uint32 height) { SetViewportSize(width, height); });
 
-		m_ViewportWidth = m_Window->GetFramebufferWidth();
-		m_ViewportHeight = m_Window->GetFramebufferHeight();
-		m_Window->AddFramebufferSizeCallback([this](uint32 width, uint32 height) { OnFramebufferSizeCallback(width, height); });
+		SetViewportSize(m_Window->GetFramebufferWidth(), m_Window->GetFramebufferHeight());
 	}
 
 	void GolfDash::Run()
@@ -41,7 +40,7 @@ namespace gd {
 
 	void GolfDash::OnInit()
 	{
-
+		m_Shader = Ref<Shader>::Create("Assets/Shaders/VertexShader.glsl", "Assets/Shaders/FragmentShader.glsl");
 	}
 
 	void GolfDash::OnUpdate()
@@ -49,12 +48,15 @@ namespace gd {
 
 	}
 
-	void GolfDash::OnFramebufferSizeCallback(uint32 width, uint32 height)
+	void GolfDash::SetViewportSize(uint32 width, uint32 height)
 	{
-		glViewport(0, 0, width, height);
+		if (width != m_ViewportWidth || height != m_ViewportHeight)
+		{
+			glViewport(0, 0, width, height);
 
-		m_ViewportWidth = width;
-		m_ViewportWidth = height;
+			m_ViewportWidth = width;
+			m_ViewportWidth = height;
+		}
 	}
 
 }
