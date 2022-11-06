@@ -98,6 +98,24 @@ namespace gd {
 		}
 	}
 
+	float Window::GetTime() const
+	{
+		return static_cast<float>(glfwGetTime());
+	}
+
+	bool Window::IsMouseButtonDown(uint32 button) const
+	{
+		int32 state = glfwGetMouseButton(m_Window, button);
+		return state == GLFW_PRESS;
+	}
+
+	glm::vec2 Window::GetMousePosition() const
+	{
+		double xpos, ypos;
+		glfwGetCursorPos(m_Window, &xpos, &ypos);
+		return { (float)xpos, (float)ypos };
+	}
+
 	void Window::CenterWindow() const
 	{
 		auto videomode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -131,6 +149,26 @@ namespace gd {
 			data.FramebufferHeight = height;
 			for (auto& callback : data.FramebufferSizeCallbacks)
 				callback(width, height);
+		});
+
+		glfwSetMouseButtonCallback(m_Window, [](auto window, auto button, auto action, auto mods)
+		{
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			switch (action)
+			{
+			case GLFW_PRESS:
+			{
+				for (auto& callback : data.MouseButtonPressCallbacks)
+					callback(button);
+				break;
+			}
+			case GLFW_RELEASE:
+			{
+				for (auto& callback : data.MouseButtonReleaseCallbacks)
+					callback(button);
+				break;
+			}
+			}
 		});
 	}
 

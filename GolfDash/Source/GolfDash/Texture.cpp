@@ -16,7 +16,8 @@ namespace gd {
 		uint8* data = stbi_load(filepath.c_str(), &width, &height, &channels, STBI_default);
 		if (!data)
 		{
-			std::cerr << "Could not load texture '" << filepath << "'";
+			std::cerr << "Could not load texture '" << filepath << "'" << std::endl;
+			std::cerr << stbi_failure_reason() << std::endl;
 			return;
 		}
 

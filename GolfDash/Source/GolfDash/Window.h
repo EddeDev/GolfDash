@@ -26,11 +26,18 @@ namespace gd {
 		void PollEvents() const;
 		void SwapBuffers() const;
 
+		// Callbacks
 		void AddCloseCallback(const std::function<void()>& callback) { m_Data.CloseCallbacks.push_back(callback); }
 		void AddWindowSizeCallback(const std::function<void(uint32 width, uint32 height)>& callback) { m_Data.SizeCallbacks.push_back(callback); }
 		void AddFramebufferSizeCallback(const std::function<void(uint32 width, uint32 height)>& callback) { m_Data.FramebufferSizeCallbacks.push_back(callback); }
-	
+		void AddMouseButtonPressCallback(const std::function<void(uint32 button)>& callback) { m_Data.MouseButtonPressCallbacks.push_back(callback); }
+		void AddMouseButtonReleaseCallback(const std::function<void(uint32 button)>& callback) { m_Data.MouseButtonReleaseCallbacks.push_back(callback); }
+		
 		void SetVSync(bool enabled);
+		float GetTime() const;
+
+		bool IsMouseButtonDown(uint32 button) const;
+		glm::vec2 GetMousePosition() const;
 
 		uint32 GetWidth() const { return m_Data.Width; }
 		uint32 GetHeight() const { return m_Data.Height; }
@@ -52,9 +59,12 @@ namespace gd {
 			std::string Title;
 			bool VSync;
 
+			// Callbacks
 			std::vector<std::function<void()>> CloseCallbacks;
 			std::vector<std::function<void(uint32 width, uint32 height)>> SizeCallbacks;
 			std::vector<std::function<void(uint32 width, uint32 height)>> FramebufferSizeCallbacks;
+			std::vector<std::function<void(uint32 button)>> MouseButtonPressCallbacks;
+			std::vector<std::function<void(uint32 button)>> MouseButtonReleaseCallbacks;
 		} m_Data;
 	};
 

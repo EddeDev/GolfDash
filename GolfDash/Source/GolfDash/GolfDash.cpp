@@ -5,6 +5,8 @@
 
 namespace gd {
 
+#define PRINT(message) std::cout << message << std::endl
+
 	GolfDash::GolfDash()
 	{
 		WindowConfig windowConfig;
@@ -20,6 +22,8 @@ namespace gd {
 		});
 		m_Window->AddFramebufferSizeCallback([this](uint32 width, uint32 height) { SetViewportSize(width, height); });
 
+		m_Mouse = Ref<Mouse>::Create(m_Window);
+
 		SetViewportSize(m_Window->GetFramebufferWidth(), m_Window->GetFramebufferHeight());
 	}
 
@@ -27,26 +31,50 @@ namespace gd {
 	{
 		OnInit();
 
+		float deltaTime = 0.0f;
+		float lastTime = 0.0f;
+
 		m_Window->ShowWindow();
 		while (m_Running)
 		{
+			float time = m_Window->GetTime();
+			deltaTime = time - lastTime;
+			lastTime = time;
+
+			m_Mouse->OnUpdate();
 			m_Window->PollEvents();
-			OnUpdate();
+			OnUpdate(time, deltaTime);
 			m_Window->SwapBuffers();
 		}
 	}
 
 	void GolfDash::OnInit()
 	{
-		m_Shader = Ref<Shader>::Create("Assets/Shaders/VertexShader.glsl", "Assets/Shaders/FragmentShader.glsl");
+		// Default
+		{
+			m_DefaultShader = Ref<Shader>::Create("Assets/Shaders/Default_Vertex.glsl", "Assets/Shaders/Default_Fragment.glsl");
 
-		PipelineConfig pipelineConfig;
-		pipelineConfig.Shader = m_Shader;
-		pipelineConfig.InputLayout = {
-			{ "a_Position", ShaderDataType::Vec3 },
-			{ "a_TexCoord", ShaderDataType::Vec2 }
-		};
-		m_Pipeline = Ref<Pipeline>::Create(pipelineConfig);
+			PipelineConfig pipelineConfig;
+			pipelineConfig.Shader = m_DefaultShader;
+			pipelineConfig.InputLayout = {
+				{ "a_Position", ShaderDataType::Vec3 },
+				{ "a_TexCoord", ShaderDataType::Vec2 }
+			};
+			m_DefaultPipeline = Ref<Pipeline>::Create(pipelineConfig);
+		}
+
+		// Composite
+		{
+			m_CompositeShader = Ref<Shader>::Create("Assets/Shaders/Composite_Vertex.glsl", "Assets/Shaders/Composite_Fragment.glsl");
+
+			PipelineConfig pipelineConfig;
+			pipelineConfig.Shader = m_CompositeShader;
+			pipelineConfig.InputLayout = {
+				{ "a_Position", ShaderDataType::Vec3 },
+				{ "a_TexCoord", ShaderDataType::Vec2 }
+			};
+			m_CompositePipeline = Ref<Pipeline>::Create(pipelineConfig);
+		}
 
 		struct Vertex
 		{
@@ -74,74 +102,182 @@ namespace gd {
 		m_VertexBuffer = Ref<VertexBuffer>::Create(vertices, static_cast<uint32>(4 * sizeof(Vertex)));
 		m_IndexBuffer = Ref<IndexBuffer>::Create(indices, static_cast<uint32>(2 * sizeof(Index)));
 
-		m_TestTexture = Ref<Texture>::Create("Assets/Textures/TestTex.png");
 		m_GrassTexture = Ref<Texture>::Create("Assets/Textures/Grass.png");
 		m_BallTexture = Ref<Texture>::Create("Assets/Textures/Ball.png");
 		m_HoleTexture = Ref<Texture>::Create("Assets/Textures/Hole.png");
+
+		m_HolePosition = { 0.5f, 0.5f };
 	}
 
-	void GolfDash::OnUpdate()
+	static void VelocityEpsilonClamp(const glm::vec2& initialVelocity, glm::vec2& inoutVelocity)
+	{
+		const float epsilon = 0.005f;
+
+		if (initialVelocity.x > 0.0f)
+		{
+			if (inoutVelocity.x <= epsilon)
+				inoutVelocity.x = 0.0f;
+		}
+		else
+		{
+			if (inoutVelocity.x >= -epsilon)
+				inoutVelocity.x = 0.0f;
+		}
+
+		if (initialVelocity.y > 0.0f)
+		{
+			if (inoutVelocity.y <= epsilon)
+				inoutVelocity.y = 0.0f;
+		}
+		else
+		{
+			if (inoutVelocity.y >= -epsilon)
+				inoutVelocity.y = 0.0f;
+		}
+	}
+
+	void GolfDash::OnUpdate(float time, float deltaTime)
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 		m_VertexBuffer->Bind();
-		m_Pipeline->Bind();
+		m_DefaultPipeline->Bind();
 		m_IndexBuffer->Bind();
 
-		m_Shader->Bind();
-		
-		glm::mat4 viewMatrix = glm::inverse(glm::mat4(1.0f));
-
-		// BG
-		{
-			glm::mat4 projectionMatrix = glm::ortho(0.0f, (float)m_ViewportWidth, 0.0f, (float)m_ViewportHeight);
-			m_Shader->SetUniform("u_Uniforms.ViewProjectionMatrix", projectionMatrix * viewMatrix);
-
-			float size = m_ViewportWidth * 0.2f;
-
-			m_GrassTexture->Bind();
-			m_Shader->SetUniform("u_Texture", 0);
-
-			for (float x = 0; x < m_ViewportWidth; x += size)
-			{
-				for (float y = 0; y < m_ViewportHeight; y += size)
-				{
-					glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(size));
-					glm::mat4 transform = glm::translate(glm::mat4(1.0f), { x + (size * 0.5f), y + (size * 0.5f), -0.2f }) * scale;
-
-					m_Shader->SetUniform("u_Uniforms.Transform", transform);
-					m_Pipeline->DrawIndexed(m_IndexBuffer->GetCount());
-				}
-			}
-		}
+		m_DefaultShader->Bind();
 
 		float aspectRatio = (float)m_ViewportWidth / (float)m_ViewportHeight;
 		glm::mat4 projectionMatrix = glm::ortho(-aspectRatio, aspectRatio, -1.0f, 1.0f, -1.0f, 1.0f);
-		m_Shader->SetUniform("u_Uniforms.ViewProjectionMatrix", projectionMatrix * viewMatrix);
+		glm::mat4 viewMatrix = glm::inverse(glm::mat4(1.0f));
+		m_DefaultShader->SetUniform("u_Uniforms.ViewProjectionMatrix", projectionMatrix * viewMatrix);
+
+		glm::vec2 orthoMousePos = m_Mouse->GetMouseOrthoPosition(viewMatrix, projectionMatrix);
+
+		// BG
+		{
+			m_GrassTexture->Bind();
+			m_DefaultShader->SetUniform("u_Texture", 0);
+
+			glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
+
+			float size = 3.0f;
+
+			for (float x = -size; x <= size; x += 1.0f)
+			{
+				for (float y = -size; y <= size; y += 1.0f)
+				{
+					glm::vec3 position = { x, y, -0.2f };
+					glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * scaleMatrix;
+					m_DefaultShader->SetUniform("u_Uniforms.Transform", transform);
+					m_DefaultPipeline->DrawIndexed(m_IndexBuffer->GetCount());
+				}
+			}
+		}
 		
 		// Ball
 		{
-			glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
-			glm::mat4 transform = glm::translate(glm::mat4(1.0f), { -1.0f, -0.7f, -0.1f }) * scale;
+			glm::vec2 ballScale = glm::vec2(0.1f);
 
-			m_BallTexture->Bind();
-			m_Shader->SetUniform("u_Texture", 0);
+			if (m_Mouse->GetMouseButton(GD_MOUSE_BUTTON_LEFT))
+			{
+				if (glm::epsilonEqual(orthoMousePos, m_BallPosition, ballScale * 0.5f) == glm::bvec2(true))
+				{
+					if (m_BallVelocity.x == 0.0f && m_BallVelocity.y == 0.0f)
+						m_IsDragging = true;
+				}
+			}
 
-			m_Shader->SetUniform("u_Uniforms.Transform", transform);
-			m_Pipeline->DrawIndexed(m_IndexBuffer->GetCount());
+			if (m_Mouse->GetMouseButtonUp(GD_MOUSE_BUTTON_LEFT))
+			{
+				if (m_IsDragging)
+				{
+					const float maxDistance = 2.0f;
+
+					float distance = glm::distance(orthoMousePos, m_BallPosition);
+					if (distance <= ballScale.x)
+					{
+						PRINT("Ball was dragged within it's boundaries (no force applied!)");
+					}
+					else if (distance >= maxDistance)
+					{
+						PRINT("Reached the max distance!");
+					}
+					else
+					{
+						PRINT("Stopped dragging, adding force! distance: " << distance);
+
+						m_InitialBallVelocity = glm::normalize(m_BallPosition - orthoMousePos);
+						m_InitialBallVelocity *= glm::sqrt(distance);
+						PRINT("Initial velocity: " << m_InitialBallVelocity.x << ", " << m_InitialBallVelocity.y);
+
+						m_BallVelocity = m_InitialBallVelocity;
+					}
+					m_IsDragging = false;
+				}
+			}
+
+			// TODO: tweak this
+			m_BallVelocity *= 1.0f - 0.005f;
+
+			VelocityEpsilonClamp(m_InitialBallVelocity, m_BallVelocity);
+
+			m_BallPosition += m_BallVelocity * deltaTime;
+
+			if (m_BallVelocity.x == 0.0f && m_BallVelocity.y == 0.0f)
+			{
+			}
+
+			float magnitude = glm::length(m_BallVelocity);
+			PRINT(magnitude);
+			if (magnitude < 1.0f)
+			{
+				if (glm::epsilonEqual(m_BallPosition, m_HolePosition, ballScale * 0.5f) == glm::bvec2(true))
+				{
+					if (!m_IsBallInHole)
+					{
+						// Reset ball velocity
+						m_InitialBallVelocity = { 0.0f, 0.0f };
+						m_BallVelocity = { 0.0f, 0.0f };
+
+						m_IsBallInHole = true;
+					}
+
+					m_TimeInHole += deltaTime;
+					if (m_TimeInHole >= 2.0f)
+					{
+						m_IsBallInHole = false;
+						m_TimeInHole = 0.0f;
+
+						// temp
+						m_BallPosition = { -0.5f, -0.5f };
+					}
+				}
+			}
+
+			if (!m_IsBallInHole)
+			{
+				glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(ballScale, 1.0f));
+				glm::mat4 transform = glm::translate(glm::mat4(1.0f), { m_BallPosition, -0.1f }) * scaleMatrix;
+
+				m_BallTexture->Bind();
+				m_DefaultShader->SetUniform("u_Texture", 0);
+
+				m_DefaultShader->SetUniform("u_Uniforms.Transform", transform);
+				m_DefaultPipeline->DrawIndexed(m_IndexBuffer->GetCount());
+			}
 		}
 
 		// Hole
 		{
-			glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
-			glm::mat4 transform = glm::translate(glm::mat4(1.0f), { 1.0f, 0.7f, -0.1f }) * scale;
+			glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+			glm::mat4 transform = glm::translate(glm::mat4(1.0f), { m_HolePosition, -0.1f }) * scaleMatrix;
 
 			m_HoleTexture->Bind();
-			m_Shader->SetUniform("u_Texture", 0);
+			m_DefaultShader->SetUniform("u_Texture", 0);
 
-			m_Shader->SetUniform("u_Uniforms.Transform", transform);
-			m_Pipeline->DrawIndexed(m_IndexBuffer->GetCount());
+			m_DefaultShader->SetUniform("u_Uniforms.Transform", transform);
+			m_DefaultPipeline->DrawIndexed(m_IndexBuffer->GetCount());
 		}
 	}
 
