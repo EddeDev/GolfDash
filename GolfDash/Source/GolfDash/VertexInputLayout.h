@@ -76,7 +76,7 @@ namespace gd {
 	class VertexInputLayout
 	{
 	public:
-		VertexInputLayout() {}
+		VertexInputLayout() = default;
 		VertexInputLayout(const std::initializer_list<VertexInputAttribute>& attributes)
 			: m_Attributes(attributes)
 		{

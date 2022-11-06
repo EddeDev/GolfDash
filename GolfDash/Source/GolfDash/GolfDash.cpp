@@ -199,10 +199,12 @@ namespace gd {
 					{
 						PRINT("Ball was dragged within it's boundaries (no force applied!)");
 					}
+#if 0
 					else if (distance >= maxDistance)
 					{
 						PRINT("Reached the max distance!");
 					}
+#endif
 					else
 					{
 						PRINT("Stopped dragging, adding force! distance: " << distance);
@@ -219,20 +221,38 @@ namespace gd {
 
 			// TODO: tweak this
 			m_BallVelocity *= 1.0f - 0.005f;
-
 			VelocityEpsilonClamp(m_InitialBallVelocity, m_BallVelocity);
-
 			m_BallPosition += m_BallVelocity * deltaTime;
 
-			if (m_BallVelocity.x == 0.0f && m_BallVelocity.y == 0.0f)
+			if (m_BallPosition.x >= aspectRatio - (ballScale.x * 0.5f))
 			{
+				m_InitialBallVelocity = glm::vec2(-m_BallVelocity.x, m_BallVelocity.y);
+				m_BallVelocity = m_InitialBallVelocity;
+			}
+
+			if (m_BallPosition.x <= -aspectRatio + (ballScale.x * 0.5f))
+			{
+				m_InitialBallVelocity = glm::vec2(-m_BallVelocity.x, m_BallVelocity.y);
+				m_BallVelocity = m_InitialBallVelocity;
+			}
+
+			if (m_BallPosition.y >= 1.0f - (ballScale.x * 0.5f))
+			{
+				m_InitialBallVelocity = glm::vec2(m_BallVelocity.x, -m_BallVelocity.y);
+				m_BallVelocity = m_InitialBallVelocity;
+			}
+
+			if (m_BallPosition.y <= -1.0f + (ballScale.x * 0.5f))
+			{
+				m_InitialBallVelocity = glm::vec2(m_BallVelocity.x, -m_BallVelocity.y);
+				m_BallVelocity = m_InitialBallVelocity;
 			}
 
 			float magnitude = glm::length(m_BallVelocity);
-			PRINT(magnitude);
 			if (magnitude < 1.0f)
 			{
-				if (glm::epsilonEqual(m_BallPosition, m_HolePosition, ballScale * 0.5f) == glm::bvec2(true))
+				float size = 0.35f;
+				if (glm::epsilonEqual(m_BallPosition, m_HolePosition, ballScale * size) == glm::bvec2(true))
 				{
 					if (!m_IsBallInHole)
 					{
