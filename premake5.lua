@@ -21,9 +21,9 @@ project "GolfDash"
     {
         "%{prj.name}/Source/**.h",
         "%{prj.name}/Source/**.cpp",
-
         "%{prj.name}/Libraries/glm/glm/**.hpp",
         "%{prj.name}/Libraries/glm/glm/**.inl",
+        "%{prj.name}/Libraries/stb_image/stb_image.h"
     }
     
     includedirs
@@ -31,7 +31,8 @@ project "GolfDash"
         "%{prj.name}/Source",
         "%{prj.name}/Libraries/GLFW/include",
         "%{prj.name}/Libraries/Glad/include",
-        "%{prj.name}/Libraries/glm"
+        "%{prj.name}/Libraries/glm",
+        "%{prj.name}/Libraries/stb_image"
     }
 
     links

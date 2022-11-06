@@ -86,4 +86,22 @@ namespace gd {
 		glUseProgram(0);
 	}
 
+	void Shader::SetUniform(const std::string& uniformName, uint32 value) const
+	{
+		uint32 location = glGetUniformLocation(m_ProgramID, uniformName.c_str());
+		if (location == -1)
+			std::cerr << "Could not find uniform in shader!" << std::endl;
+
+		glUniform1ui(location, value);
+	}
+
+	void Shader::SetUniform(const std::string& uniformName, const glm::mat4& value) const
+	{
+		uint32 location = glGetUniformLocation(m_ProgramID, uniformName.c_str());
+		if (location == -1)
+			std::cerr << "Could not find uniform in shader!" << std::endl;
+
+		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+	}
+
 }

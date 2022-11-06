@@ -6,6 +6,7 @@
 #include "Pipeline.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "Texture.h"
 
 namespace gd {
 
@@ -28,6 +29,11 @@ namespace gd {
 		Ref<Pipeline> m_Pipeline;
 		Ref<VertexBuffer> m_VertexBuffer;
 		Ref<IndexBuffer> m_IndexBuffer;
+
+		Ref<Texture> m_TestTexture;
+		Ref<Texture> m_GrassTexture;
+		Ref<Texture> m_BallTexture;
+		Ref<Texture> m_HoleTexture;
 
 		uint32 m_ViewportWidth = 0;
 		uint32 m_ViewportHeight = 0;
