@@ -5,6 +5,10 @@
 
 #include "Renderer.h"
 
+#include "Camera.h"
+#include "Ball.h"
+#include "Hole.h"
+
 namespace gd {
 
 	class GolfDash
@@ -13,47 +17,37 @@ namespace gd {
 		GolfDash();
 
 		void Run();
+
+		Ref<Renderer> GetRenderer() const { return m_Renderer; }
+		Ref<Mouse> GetMouse() const { return m_Mouse; }
+	
+		Ref<Ball> GetBall() { return m_Ball; }
+		const Ref<Ball> GetBall() const { return m_Ball; }
+
+		Ref<Hole> GetHole() { return m_Hole; }
+		const Ref<Hole> GetHole() const { return m_Hole; }
+
+		Camera& GetCamera() { return m_Camera; }
+		const Camera& GetCamera() const { return m_Camera; }
+
+		static GolfDash& Get() { return *s_Instance; }
 	private:
-		void OnInit();
-		void OnUpdate(float time, float deltaTime);
-
 		void RenderBackground();
-		void RenderBall(float time, float deltaTime);
-		void RenderHole();
-
 		void SetViewportSize(uint32 width, uint32 height);
 	private:
-		// Core
+		static GolfDash* s_Instance;
+
 		Ref<Window> m_Window;
 		Ref<Mouse> m_Mouse;
 		bool m_Running = true;
 
 		Ref<Renderer> m_Renderer;
+		Camera m_Camera;
 
-		// Textures
+		Ref<Ball> m_Ball;
+		Ref<Hole> m_Hole;
+
 		Ref<Texture> m_GrassTexture;
-		Ref<Texture> m_BallTexture;
-		Ref<Texture> m_HoleTexture;
-
-		// Camera
-		float m_AspectRatio = 0.0f;
-		glm::mat4 m_ViewMatrix = glm::mat4(1.0f);
-		glm::mat4 m_ProjectionMatrix = glm::mat4(1.0f);
-
-		// Hole
-		glm::vec2 m_HolePosition = glm::vec2(0.0f);
-
-		// Ball
-		glm::vec2 m_BallPosition = glm::vec2(0.0f);
-		glm::vec2 m_BallDirection = glm::vec2(0.0f);
-		glm::vec2 m_BallVelocity = glm::vec2(0.0f);
-		glm::vec2 m_InitialBallVelocity = glm::vec2(0.0f);
-		float m_BallMagnitude = 0.0f;
-		float m_InitialBallMagnitude = 0.0f;
-
-		bool m_IsDragging = false;
-		bool m_IsBallInHole = false;
-		float m_TimeInHole = 0.0f;
 
 		uint32 m_ViewportWidth = 0;
 		uint32 m_ViewportHeight = 0;

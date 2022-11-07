@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Camera.h"
+
 #include "Shader.h"
 #include "Pipeline.h"
 #include "VertexBuffer.h"
@@ -14,7 +16,7 @@ namespace gd {
 		Renderer();
 		virtual ~Renderer();
 
-		void BeginFrame();
+		void BeginFrame(const Camera& camera);
 		void EndFrame();
 
 		void RenderQuad(const glm::vec3& position, const glm::vec2& scale, const glm::vec4& color, Ref<Texture> texture, float tilingFactor = 1.0f);
@@ -24,9 +26,10 @@ namespace gd {
 		void FlushLines();
 
 		void SetViewportSize(uint32 width, uint32 height);
-		void SetViewProjectionMatrix(const glm::mat4& viewProjectionMatrix) { m_ViewProjectionMatrix = viewProjectionMatrix; }
 	private:
 		glm::mat4 m_ViewProjectionMatrix = glm::mat4(1.0f);
+
+		Camera m_Camera;
 
 		uint32 m_ViewportWidth = 0;
 		uint32 m_ViewportHeight = 0;

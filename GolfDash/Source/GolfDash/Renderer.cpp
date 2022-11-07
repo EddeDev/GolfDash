@@ -106,8 +106,10 @@ namespace gd {
 		delete[] m_QuadVertexStorage;
 	}
 
-	void Renderer::BeginFrame()
+	void Renderer::BeginFrame(const Camera& camera)
 	{
+		m_ViewProjectionMatrix = camera.ViewProjectionMatrix;
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
