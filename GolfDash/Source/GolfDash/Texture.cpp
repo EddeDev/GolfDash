@@ -46,6 +46,18 @@ namespace gd {
 		stbi_image_free(data);
 	}
 
+	Texture::Texture(uint32 width, uint32 height, const void* data)
+	{
+		glCreateTextures(GL_TEXTURE_2D, 1, &m_TextureID);
+		glTextureStorage2D(m_TextureID, 1, GL_RGBA8, width, height);
+
+		glTextureSubImage2D(m_TextureID, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateTextureMipmap(m_TextureID);
+
+		glTextureParameteri(m_TextureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTextureParameteri(m_TextureID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
+
 	Texture::~Texture()
 	{
 		glDeleteTextures(1, &m_TextureID);

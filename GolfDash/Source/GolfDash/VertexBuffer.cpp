@@ -20,7 +20,7 @@ namespace gd {
 
 	}
 
-	VertexBuffer::VertexBuffer(const void* data, uint32 size, VertexBufferUsage usage)
+	VertexBuffer::VertexBuffer(const void* data, size_t size, VertexBufferUsage usage)
 	{
 		glCreateBuffers(1, &m_BufferID);
 		glNamedBufferData(m_BufferID, size, data, Utils::OpenGLVertexBufferUsage(usage));
@@ -39,6 +39,11 @@ namespace gd {
 	void VertexBuffer::Unbind() const
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+
+	void VertexBuffer::SetData(const void* data, size_t size) const
+	{
+		glNamedBufferSubData(m_BufferID, 0, size, data);
 	}
 
 }

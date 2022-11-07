@@ -6,6 +6,7 @@ namespace gd {
 	{
 	public:
 		Texture(const std::string& filepath);
+		Texture(uint32 width, uint32 height, const void* data);
 		virtual ~Texture();
 
 		void Bind(uint32 slot = 0) const;

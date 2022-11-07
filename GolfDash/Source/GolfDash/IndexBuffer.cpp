@@ -5,7 +5,7 @@
 
 namespace gd {
 
-	IndexBuffer::IndexBuffer(const void* data, uint32 size)
+	IndexBuffer::IndexBuffer(const void* data, size_t size)
 		: m_Size(size)
 	{
 		glCreateBuffers(1, &m_BufferID);

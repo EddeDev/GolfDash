@@ -12,11 +12,13 @@ namespace gd {
 	class VertexBuffer : public ReferenceCounted
 	{
 	public:
-		VertexBuffer(const void* data, uint32 size, VertexBufferUsage usage = VertexBufferUsage::Static);
+		VertexBuffer(const void* data, size_t size, VertexBufferUsage usage = VertexBufferUsage::Static);
 		virtual ~VertexBuffer();
 
 		void Bind() const;
 		void Unbind() const;
+
+		void SetData(const void* data, size_t size) const;
 	private:
 		uint32 m_BufferID = 0;
 	};

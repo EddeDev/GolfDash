@@ -5,7 +5,7 @@ namespace gd {
 	class IndexBuffer : public ReferenceCounted
 	{
 	public:
-		IndexBuffer(const void* data, uint32 size);
+		IndexBuffer(const void* data, size_t size);
 		virtual ~IndexBuffer();
 
 		void Bind() const;
