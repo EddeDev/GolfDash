@@ -11,10 +11,10 @@ namespace gd {
 		void Bind() const;
 		void Unbind() const;
 
-		uint32 GetCount() const { return m_Size / sizeof(uint32); }
+		uint32 GetCount() const { return static_cast<uint32>(m_Size / sizeof(uint32)); }
 	private:
 		uint32 m_BufferID = 0;
-		uint32 m_Size = 0;
+		size_t m_Size = 0;
 	};
 
 }

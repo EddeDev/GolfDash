@@ -11,6 +11,7 @@ namespace gd {
 		windowConfig.Width = 1920;
 		windowConfig.Height = 1080;
 		windowConfig.Title = "Golf Dash";
+		windowConfig.Fullscreen = true;
 
 		m_Window = Ref<Window>::Create(windowConfig);
 		m_Window->CreateContext();

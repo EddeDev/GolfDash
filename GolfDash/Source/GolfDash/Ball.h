@@ -20,6 +20,8 @@ namespace gd {
 		float m_TimeInHole = 0.0f;
 
 		glm::vec2 m_Position = glm::vec2(0.0f);
+		glm::vec2 m_Scale = glm::vec2(0.1f);
+		glm::vec2 m_InitialScale = glm::vec2(0.1f);
 		glm::vec2 m_Direction = glm::vec2(0.0f);
 		glm::vec2 m_Velocity = glm::vec2(0.0f);
 		glm::vec2 m_InitialVelocity = glm::vec2(0.0f);

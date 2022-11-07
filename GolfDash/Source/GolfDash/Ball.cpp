@@ -10,6 +10,9 @@ namespace gd {
 	Ball::Ball()
 	{
 		m_Texture = Ref<Texture>::Create("Assets/Textures/Ball.png");
+	
+		m_InitialScale = glm::vec2(0.1f);
+		m_Scale = m_InitialScale;
 	}
 
 	void Ball::OnUpdate(float time, float deltaTime)
@@ -20,15 +23,24 @@ namespace gd {
 		Camera& camera = GolfDash::Get().GetCamera();
 
 		glm::vec2 orthoMousePos = mouse->GetMouseOrthoPosition(camera.ViewMatrix, camera.ProjectionMatrix);
-		glm::vec2 ballScale = glm::vec2(0.1f);
 
 		if (mouse->GetMouseButton(GD_MOUSE_BUTTON_LEFT))
 		{
-			if (glm::epsilonEqual(orthoMousePos, m_Position, ballScale * 0.5f) == glm::bvec2(true))
+			if (glm::epsilonEqual(orthoMousePos, m_Position, m_Scale * 0.5f) == glm::bvec2(true))
 			{
 				if (m_Velocity.x == 0.0f && m_Velocity.y == 0.0f)
 					m_IsDragging = true;
 			}
+#if 0
+			else
+			{
+				if (!m_IsDragging)
+				{
+					// /click in void
+					camera.SetZoomLevel(camera.GetZoomLevel() + (0.5f * deltaTime));
+				}
+			}
+#endif
 		}
 
 		const float maxDragDistance = 1.5f;
@@ -45,12 +57,14 @@ namespace gd {
 			}
 		}
 
+		const float epsilon = 0.0001f;
+
 		if (mouse->GetMouseButtonUp(GD_MOUSE_BUTTON_LEFT))
 		{
 			if (m_IsDragging)
 			{
 				float distance = glm::distance(orthoMousePos, m_Position);
-				if (distance <= ballScale.x)
+				if (distance <= m_Scale.x)
 				{
 					PRINT("Ball was dragged within it's boundaries (no force applied!)");
 				}
@@ -64,6 +78,13 @@ namespace gd {
 
 					m_InitialVelocity = glm::normalize(m_Position - orthoMousePos);
 					m_InitialVelocity *= glm::sqrt(distance);
+
+					// TODO: temp fix
+					if (m_InitialVelocity.x == 0.0f)
+						m_InitialVelocity.x += epsilon;
+					if (m_InitialVelocity.y == 0.0f)
+						m_InitialVelocity.y += epsilon;
+
 					PRINT("Initial velocity: " << m_InitialVelocity.x << ", " << m_InitialVelocity.y);
 					m_Velocity = m_InitialVelocity;
 
@@ -80,7 +101,6 @@ namespace gd {
 
 		m_Position += m_Velocity * deltaTime;
 
-		const float epsilon = 0.0001f;
 		if (m_Velocity.x > epsilon || m_Velocity.x < -epsilon || m_Velocity.y > epsilon || m_Velocity.y < -epsilon)
 		{
 			const float friction = 0.5f;
@@ -99,25 +119,25 @@ namespace gd {
 			m_Velocity = { 0.0f, 0.0f };
 		}
 
-		if (m_Position.x >= camera.GetAspectRatio() - (ballScale.x * 0.5f))
+		if (m_Position.x >= camera.GetAspectRatio() - (m_Scale.x * 0.5f))
 		{
 			m_Velocity = { -m_Velocity.x, m_Velocity.y };
 			m_Direction.x = -1.0f;
 		}
 
-		if (m_Position.x <= -camera.GetAspectRatio() + (ballScale.x * 0.5f))
+		if (m_Position.x <= -camera.GetAspectRatio() + (m_Scale.x * 0.5f))
 		{
 			m_Velocity = { -m_Velocity.x, m_Velocity.y };
 			m_Direction.x = 1.0f;
 		}
 
-		if (m_Position.y >= 1.0f - (ballScale.x * 0.5f))
+		if (m_Position.y >= 1.0f - (m_Scale.x * 0.5f))
 		{
 			m_Velocity = { m_Velocity.x, -m_Velocity.y };
 			m_Direction.y = -1.0f;
 		}
 
-		if (m_Position.y <= -1.0f + (ballScale.x * 0.5f))
+		if (m_Position.y <= -1.0f + (m_Scale.x * 0.5f))
 		{
 			m_Velocity = { m_Velocity.x, -m_Velocity.y };
 			m_Direction.y = 1.0f;
@@ -126,7 +146,7 @@ namespace gd {
 		if (m_BallMagnitude < 1.0f)
 		{
 			float size = 0.35f;
-			if (glm::epsilonEqual(m_Position, hole->GetPosition(), ballScale * size) == glm::bvec2(true))
+			if (glm::epsilonEqual(m_Position, hole->GetPosition(), m_InitialScale * size) == glm::bvec2(true))
 			{
 				if (!m_IsInHole)
 				{
@@ -136,17 +156,24 @@ namespace gd {
 				}
 
 				m_TimeInHole += deltaTime;
+
+				m_Scale -= 0.35f * deltaTime;
+				m_Scale = glm::clamp(m_Scale, 0.0f, m_InitialScale.x);
+
+				m_Position = glm::lerp(m_Position, hole->GetPosition(), 1.5f * deltaTime);
+
 				if (m_TimeInHole >= 2.0f)
 				{
 					m_IsInHole = false;
 					m_TimeInHole = 0.0f;
-					m_Position = { -0.5f, -0.5f };
+					m_Position = { 0.0f, 0.0f };
+					m_Scale = m_InitialScale;
 				}
 			}
 		}
 
-		if (!m_IsInHole)
-			renderer->RenderQuad({ m_Position, -0.1f }, ballScale, { 1.0f, 1.0f, 1.0f, 1.0f }, m_Texture);
+		// if (!m_IsInHole)
+			renderer->RenderQuad({ m_Position, -0.1f }, m_Scale, { 1.0f, 1.0f, 1.0f, 1.0f }, m_Texture);
 	}
 
 }

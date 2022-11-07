@@ -14,7 +14,10 @@ namespace gd {
 	void Hole::OnUpdate()
 	{
 		Ref<Renderer> renderer = GolfDash::Get().GetRenderer();
-		renderer->RenderQuad({ m_Position, -0.1f }, glm::vec2(0.1f), { 1.0f, 1.0f, 1.0f, 1.0f }, m_Texture);
+
+		glm::vec4 tintColor = { 0.0f, 0.0f, 0.0f, 1.0f }; // temp
+
+		renderer->RenderQuad({ m_Position, -0.1f }, glm::vec2(0.1f), tintColor, m_Texture);
 	}
 
 }
