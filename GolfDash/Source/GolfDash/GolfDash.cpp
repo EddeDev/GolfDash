@@ -23,7 +23,7 @@ namespace gd {
 		m_Mouse = Ref<Mouse>::Create(m_Window);
 
 		// Create level
-		m_Level = Ref<Level>::Create(m_Window->GetFramebufferWidth(), m_Window->GetFramebufferHeight());
+		m_Level = Ref<Level>::Create();
 		m_Window->AddFramebufferSizeCallback([this](uint32 width, uint32 height) { m_Level->SetViewportSize(width, height); });
 		m_Level->SetViewportSize(m_Window->GetFramebufferWidth(), m_Window->GetFramebufferHeight());
 	}

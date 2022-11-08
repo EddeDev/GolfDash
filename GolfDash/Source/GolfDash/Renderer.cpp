@@ -113,6 +113,8 @@ namespace gd {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
+		glViewport(0, 0, m_ViewportWidth, m_ViewportHeight);
+
 		m_QuadVertexPointer = m_QuadVertexStorage;
 		m_QuadIndexCount = 0;
 

@@ -3,12 +3,9 @@
 
 namespace gd {
 
-	Level::Level(uint32 viewportWidth, uint32 viewportHeight)
-		: m_ViewportWidth(viewportWidth), m_ViewportHeight(viewportHeight)
+	Level::Level()
 	{
 		m_Renderer = Ref<Renderer>::Create();
-		m_Camera = Camera(viewportWidth, viewportHeight);
-
 		m_GrassTexture = Ref<Texture>::Create("Assets/Textures/Grass.png");
 
 		m_Ball = Ball(this);

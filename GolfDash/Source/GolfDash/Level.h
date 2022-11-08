@@ -12,7 +12,7 @@ namespace gd {
 	class Level : public ReferenceCounted
 	{
 	public:
-		Level(uint32 viewportWidth, uint32 viewportHeight);
+		Level();
 		virtual ~Level() {}
 
 		void OnUpdate(float time, float deltaTime);
