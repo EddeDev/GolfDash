@@ -1,18 +1,20 @@
 #pragma once
 
-#include "Renderer.h"
-#include "Mouse.h"
+#include "Texture.h"
 
 namespace gd {
 
-	class Ball : public ReferenceCounted
+	class Level;
+
+	class Ball
 	{
 	public:
-		Ball();
-		virtual ~Ball() {}
+		Ball() = default;
+		Ball(Ref<Level> level);
 
 		void OnUpdate(float time, float deltaTime);
 	private:
+		Ref<Level> m_Level;
 		Ref<Texture> m_Texture;
 
 		bool m_IsDragging = false;
