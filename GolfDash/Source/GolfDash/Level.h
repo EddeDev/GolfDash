@@ -28,8 +28,12 @@ namespace gd {
 
 		Camera& GetCamera() { return m_Camera; }
 		const Camera& GetCamera() const { return m_Camera; }
+
+		std::vector<Obstacle>& GetObstacles() { return m_Obstacles; }
+		const std::vector<Obstacle>& GetObstacles() const { return m_Obstacles; }
 	private:
 		void RenderBackground();
+		void RenderObstacles();
 	private:
 		uint32 m_ViewportWidth = 0;
 		uint32 m_ViewportHeight = 0;

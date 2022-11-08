@@ -36,7 +36,7 @@ namespace gd {
 				if (!m_IsDragging)
 				{
 					// /click in void
-					camera.SetZoomLevel(camera.GetZoomLevel() + (0.5f * deltaTime));
+					m_Level->GetCamera().SetZoomLevel(m_Level->GetCamera().GetZoomLevel() + (0.5f * deltaTime));
 				}
 			}
 #endif
@@ -142,6 +142,83 @@ namespace gd {
 			m_Direction.y = 1.0f;
 		}
 
+		const auto& obstacles = m_Level->GetObstacles();
+		for (const auto& obstacle : obstacles)
+		{
+			// Debug lines
+			m_Level->GetRenderer()->RenderLine({ obstacle.GetLeftSidePosition(), -0.05f }, { 0.5f, 0.8f, 0.2f, 1.0f }, { obstacle.GetRightSidePosition(), -0.05f }, { 0.8f, 0.4f, 0.5f, 1.0f });
+			m_Level->GetRenderer()->RenderLine({ obstacle.GetTopSidePosition(), -0.05f }, { 0.5f, 0.8f, 0.2f, 1.0f }, { obstacle.GetBottomSidePosition(), -0.05f }, { 0.8f, 0.4f, 0.5f, 1.0f });
+
+			bool intersects = obstacle.Intersects(m_Position, m_Scale);
+			if (intersects)
+			{
+				Side nearestSide = obstacle.GetNearestSide(m_Position);
+
+				if (m_Direction.x == 1.0f)
+				{
+					if (m_Direction.y == 1.0f)
+					{
+						if (nearestSide == Side::Bottom)
+						{
+							m_Velocity = { m_Velocity.x, -m_Velocity.y };
+							m_Direction.y = -1.0f;
+						}
+
+						if (nearestSide == Side::Left)
+						{
+							m_Velocity = { -m_Velocity.x, m_Velocity.y };
+							m_Direction.x = -1.0f;
+						}
+					}
+					else if (m_Direction.y == -1.0f)
+					{
+						if (nearestSide == Side::Top)
+						{
+							m_Velocity = { m_Velocity.x, -m_Velocity.y };
+							m_Direction.y = 1.0f;
+						}
+
+						if (nearestSide == Side::Left)
+						{
+							m_Velocity = { -m_Velocity.x, m_Velocity.y };
+							m_Direction.x = -1.0f;
+						}
+					}
+				}
+				else if (m_Direction.x == -1.0f)
+				{
+					if (m_Direction.y == 1.0f)
+					{
+						if (nearestSide == Side::Bottom)
+						{
+							m_Velocity = { m_Velocity.x, -m_Velocity.y };
+							m_Direction.y = -1.0f;
+						}
+
+						if (nearestSide == Side::Right)
+						{
+							m_Velocity = { -m_Velocity.x, m_Velocity.y };
+							m_Direction.x = 1.0f;
+						}
+					}
+					else if (m_Direction.y == -1.0f)
+					{
+						if (nearestSide == Side::Top)
+						{
+							m_Velocity = { m_Velocity.x, -m_Velocity.y };
+							m_Direction.y = 1.0f;
+						}
+
+						if (nearestSide == Side::Right)
+						{
+							m_Velocity = { -m_Velocity.x, m_Velocity.y };
+							m_Direction.x = 1.0f;
+						}
+					}
+				}
+			}
+		}
+
 		if (m_BallMagnitude < 1.0f)
 		{
 			float size = 0.35f;
@@ -171,8 +248,7 @@ namespace gd {
 			}
 		}
 
-		// if (!m_IsInHole)
-			m_Level->GetRenderer()->RenderQuad({ m_Position, -0.1f }, m_Scale, { 1.0f, 1.0f, 1.0f, 1.0f }, m_Texture);
+		m_Level->GetRenderer()->RenderQuad({ m_Position, -0.1f }, m_Scale, { 1.0f, 1.0f, 1.0f, 1.0f }, m_Texture);
 	}
 
 }

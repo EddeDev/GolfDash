@@ -195,23 +195,26 @@ namespace gd {
 			* glm::scale(glm::mat4(1.0f), glm::vec3(scale, 1.0f));
 
 		float textureIndex = 0.0f;
-		for (uint32 i = 1; i < m_TextureSlotIndex; i++)
+		if (texture)
 		{
-			if (m_TextureSlots[i].Get() == texture.Get())
+			for (uint32 i = 1; i < m_TextureSlotIndex; i++)
 			{
-				textureIndex = static_cast<float>(i);
-				break;
+				if (m_TextureSlots[i].Get() == texture.Get())
+				{
+					textureIndex = static_cast<float>(i);
+					break;
+				}
 			}
-		}
 
-		if (textureIndex == 0.0f)
-		{
-			if (m_TextureSlotIndex >= s_MaxTextureSlots)
-				FlushQuads();
+			if (textureIndex == 0.0f)
+			{
+				if (m_TextureSlotIndex >= s_MaxTextureSlots)
+					FlushQuads();
 
-			textureIndex = (float)m_TextureSlotIndex;
-			m_TextureSlots[m_TextureSlotIndex] = texture;
-			m_TextureSlotIndex++;
+				textureIndex = (float)m_TextureSlotIndex;
+				m_TextureSlots[m_TextureSlotIndex] = texture;
+				m_TextureSlotIndex++;
+			}
 		}
 
 		for (size_t i = 0; i < 4; i++)

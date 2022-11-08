@@ -105,6 +105,11 @@ namespace gd {
 		glDepthMask(m_Config.DepthWrite);
 		glDepthFunc(Utils::OpenGLDepthComparisonFunc(m_Config.DepthCompareFunc));
 		glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE);
+
+		// TODO: Temp
+		// move to Framebuffer class
+		GL_SET_PROPERTY(GL_BLEND, true);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	void Pipeline::Unbind() const
