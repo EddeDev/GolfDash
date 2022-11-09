@@ -43,7 +43,7 @@ namespace gd {
 #endif
 		}
 
-		const float maxDragDistance = 1.5f;
+		const float maxDragDistance = 1.0f;
 
 		if (m_IsDragging)
 		{
@@ -79,6 +79,7 @@ namespace gd {
 					m_InitialVelocity = glm::normalize(m_Position - orthoMousePos);
 					m_InitialVelocity *= glm::sqrt(distance);
 					m_InitialVelocity *= distance + 1.0f;
+					m_InitialVelocity *= glm::pow(1.3f, 2.0f);
 
 					// TODO: temp fix
 					if (m_InitialVelocity.x == 0.0f)
