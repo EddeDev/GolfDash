@@ -1,6 +1,8 @@
 #include "GolfDashPCH.h"
 #include "Renderer.h"
 
+#include "GolfDash.h"
+
 #include "glad/glad.h"
 
 namespace gd {
@@ -28,6 +30,7 @@ namespace gd {
 				{ "a_TexCoord", ShaderDataType::Vec2 },
 				{ "a_TexIndex", ShaderDataType::Float },
 				{ "a_TilingFactor", ShaderDataType::Float },
+				{ "a_Wave", ShaderDataType::Float },
 			};
 			m_QuadPipeline = Ref<Pipeline>::Create(pipelineConfig);
 
@@ -174,6 +177,7 @@ namespace gd {
 
 			m_QuadShader->Bind();
 			m_QuadShader->SetUniform("u_Uniforms.ViewProjectionMatrix", m_ViewProjectionMatrix);
+			m_QuadShader->SetUniform("u_Time", GolfDash::Get().GetWindow()->GetTime());
 
 			m_QuadPipeline->DrawIndexed(m_QuadIndexCount);
 		}
@@ -236,7 +240,7 @@ namespace gd {
 		m_TextureSlotIndex = 1;
 	}
 
-	void Renderer::RenderQuad(const glm::vec3& position, const glm::vec2& scale, const glm::vec4& color, Ref<Texture> texture, float tilingFactor)
+	void Renderer::RenderQuad(const glm::vec3& position, const glm::vec2& scale, const glm::vec4& color, Ref<Texture> texture, float tilingFactor, bool waveEffect)
 	{
 		if (m_QuadIndexCount >= s_MaxQuadIndices)
 			FlushQuads();
@@ -274,6 +278,7 @@ namespace gd {
 			m_QuadVertexPointer->TexCoord = m_QuadTextureCoords[i];
 			m_QuadVertexPointer->TexIndex = textureIndex;
 			m_QuadVertexPointer->TilingFactor = tilingFactor;
+			m_QuadVertexPointer->Wave = waveEffect ? 1.0f : 0.0f;
 			m_QuadVertexPointer++;
 		}
 

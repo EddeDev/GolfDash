@@ -95,6 +95,15 @@ namespace gd {
 		glUniform1ui(location, value);
 	}
 
+	void Shader::SetUniform(const std::string& uniformName, float value) const
+	{
+		uint32 location = glGetUniformLocation(m_ProgramID, uniformName.c_str());
+		if (location == -1)
+			std::cerr << "Could not find uniform in shader!" << std::endl;
+
+		glUniform1f(location, value);
+	}
+
 	void Shader::SetUniform(const std::string& uniformName, const glm::mat4& value) const
 	{
 		uint32 location = glGetUniformLocation(m_ProgramID, uniformName.c_str());

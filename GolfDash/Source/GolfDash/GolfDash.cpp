@@ -16,6 +16,7 @@ namespace gd {
 
 		m_Window = Ref<Window>::Create(windowConfig);
 		m_Window->CreateContext();
+		m_Window->SetCursor("Assets/Cursors/Cursor.png");
 		m_Window->AddCloseCallback([this]()
 		{
 			m_Running = false;

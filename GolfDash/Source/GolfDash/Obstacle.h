@@ -22,8 +22,6 @@ namespace gd {
 		glm::vec4 Color = glm::vec4(1.0f);
 		Ref<Texture> Texture;
 
-		bool HasCollision = true;
-
 		bool Intersects(const glm::vec2& position, const glm::vec2& scale) const
 		{
 			glm::vec2 halfScale = scale * 0.5f;
@@ -43,10 +41,10 @@ namespace gd {
 
 		Side GetNearestSide(const glm::vec2& position) const
 		{
-			float left = glm::distance(position, glm::vec2(GetLeftSidePosition().x, Position.y));
-			float right = glm::distance(position, glm::vec2(GetRightSidePosition().x, Position.y));
-			float top = glm::distance(position, glm::vec2(Position.x, GetTopSidePosition().y));
-			float bottom = glm::distance(position, glm::vec2(Position.x, GetBottomSidePosition().y));
+			float left = glm::distance(position, GetLeftSidePosition());
+			float right = glm::distance(position, GetRightSidePosition());
+			float top = glm::distance(position, GetTopSidePosition());
+			float bottom = glm::distance(position, GetBottomSidePosition());
 
 			float values[4] = { left, right, top, bottom };
 			uint32 smallestValueIndex = 0;

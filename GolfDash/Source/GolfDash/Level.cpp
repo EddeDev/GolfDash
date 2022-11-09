@@ -6,14 +6,13 @@ namespace gd {
 	Level::Level()
 	{
 		m_Renderer = Ref<Renderer>::Create();
-		m_GrassTexture = Ref<Texture>::Create("Assets/Textures/Grass.png");
+		m_GrassTexture = Ref<Texture>::Create("Assets/Textures/NewStyle/BG_Tiles_Default.psd");
 
 		m_Ball = Ball(this, { -1.0f, 0.0f });
 		m_Hole = Hole(this, { 1.0f, 0.0f });
 
 		// TODO List: 
 		// - Post processing effects
-		// - Obstacle textures
 		// - Boost pads
 		// - Level specifications
 
@@ -25,10 +24,56 @@ namespace gd {
 		obstacle.Scale *= 0.5f;
 #endif
 
-		Obstacle& centerObstacle = m_Obstacles.emplace_back();
-		centerObstacle.Position = { 0.0f, 0.0f };
-		centerObstacle.Texture = Ref<Texture>::Create("Assets/Textures/Obstacle_2.png");
-		centerObstacle.Scale.x = 0.4f;
+		Ref<Texture> obstacle1Texture = Ref<Texture>::Create("Assets/Textures/NewStyle/Obstacle.psd");
+		Ref<Texture> obstacle2Texture = Ref<Texture>::Create("Assets/Textures/Obstacle_2.png");
+
+		Obstacle& obstacle1 = m_Obstacles.emplace_back();
+		obstacle1.Position = { 0.0f, -0.3f };
+		obstacle1.Texture = obstacle2Texture;
+		obstacle1.Scale.x = 0.5f;
+		obstacle1.Scale.y = 0.5f;
+
+		Obstacle& obstacle2 = m_Obstacles.emplace_back();
+		obstacle2.Position = { 0.0f, 0.3f };
+		obstacle2.Texture = obstacle2Texture;
+		obstacle2.Scale.x = 0.5f;
+		obstacle2.Scale.y = 0.5f;
+
+		Obstacle& obstacle3 = m_Obstacles.emplace_back();
+		obstacle3.Position = { -0.5f, 0.0f };
+		obstacle3.Texture = obstacle1Texture;
+		obstacle3.Scale.x = 0.3f;
+		obstacle3.Scale.y = 0.3f;
+
+		Obstacle& obstacle4 = m_Obstacles.emplace_back();
+		obstacle4.Position = { 0.5f, 0.0f };
+		obstacle4.Texture = obstacle1Texture;
+		obstacle4.Scale.x = 0.3f;
+		obstacle4.Scale.y = 0.3f;
+
+		Obstacle& obstacle5 = m_Obstacles.emplace_back();
+		obstacle5.Position = { -1.5f, 0.75f };
+		obstacle5.Texture = obstacle1Texture;
+		obstacle5.Scale.x = 0.3f;
+		obstacle5.Scale.y = 0.3f;
+
+		Obstacle& obstacle6 = m_Obstacles.emplace_back();
+		obstacle6.Position = { 1.5f, 0.75f };
+		obstacle6.Texture = obstacle1Texture;
+		obstacle6.Scale.x = 0.3f;
+		obstacle6.Scale.y = 0.3f;
+
+		Obstacle& obstacle7 = m_Obstacles.emplace_back();
+		obstacle7.Position = { -1.5f, -0.75f };
+		obstacle7.Texture = obstacle1Texture;
+		obstacle7.Scale.x = 0.3f;
+		obstacle7.Scale.y = 0.3f;
+
+		Obstacle& obstacle8 = m_Obstacles.emplace_back();
+		obstacle8.Position = { 1.5f, -0.75f };
+		obstacle8.Texture = obstacle1Texture;
+		obstacle8.Scale.x = 0.3f;
+		obstacle8.Scale.y = 0.3f;
 	}
 
 	void Level::OnUpdate(float time, float deltaTime)
@@ -38,7 +83,7 @@ namespace gd {
 		RenderBackground();
 		RenderObstacles();
 		m_Ball.OnUpdate(time, deltaTime);
-		m_Hole.OnUpdate();
+		m_Hole.OnUpdate(time);
 
 		m_Renderer->EndFrame();
 	}

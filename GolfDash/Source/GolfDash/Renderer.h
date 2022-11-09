@@ -20,7 +20,7 @@ namespace gd {
 		void BeginFrame(const Camera& camera);
 		void EndFrame() const;
 
-		void RenderQuad(const glm::vec3& position, const glm::vec2& scale, const glm::vec4& color, Ref<Texture> texture, float tilingFactor = 1.0f);
+		void RenderQuad(const glm::vec3& position, const glm::vec2& scale, const glm::vec4& color, Ref<Texture> texture, float tilingFactor = 1.0f, bool waveEffect = false);
 		void FlushQuads();
 
 		void RenderLine(const glm::vec3& position1, const glm::vec4& color1, const glm::vec3& position2, const glm::vec4& color2);
@@ -63,6 +63,7 @@ namespace gd {
 			glm::vec2 TexCoord;
 			float TexIndex;
 			float TilingFactor;
+			float Wave;
 		};
 
 		// Quads

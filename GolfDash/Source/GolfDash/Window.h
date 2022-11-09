@@ -36,6 +36,9 @@ namespace gd {
 		void SetTitle(const std::string& title);
 		void SetVSync(bool enabled);
 
+		void SetCursor(const std::string& filepath) const;
+		void SetCursorVisible(bool visible) const;
+
 		float GetTime() const;
 
 		bool IsMouseButtonDown(uint32 button) const;

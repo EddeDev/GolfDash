@@ -4,6 +4,8 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
+#include <stb_image.h>
+
 namespace gd {
 
 	Window::Window(const WindowConfig& config)
@@ -105,6 +107,22 @@ namespace gd {
 			glfwSwapInterval(enabled ? 1 : 0);
 			m_Data.VSync = enabled;
 		}
+	}
+
+	void Window::SetCursor(const std::string& filepath) const
+	{
+		GLFWimage image = {};
+		image.pixels = stbi_load(filepath.c_str(), &image.width, &image.height, nullptr, STBI_rgb_alpha);
+		GLFWcursor* cursor = glfwCreateCursor(&image, 0, 0);
+		glfwSetCursor(m_Window, cursor);
+	}
+
+	void Window::SetCursorVisible(bool visible) const
+	{
+		if (visible)
+			glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_CAPTURED);
+		else
+			glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	}
 
 	float Window::GetTime() const

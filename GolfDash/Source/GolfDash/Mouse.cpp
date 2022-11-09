@@ -19,6 +19,7 @@ namespace gd {
 		glm::vec2 mousePosition = m_Window->GetMousePosition();
 		// mousePosition.y = m_Window->GetFramebufferHeight() - mousePosition.y;
 		m_MousePositionDelta = m_MousePosition - mousePosition;
+		mousePosition = glm::clamp(mousePosition, { 0.0f, 0.0f }, { m_Window->GetFramebufferWidth(), m_Window->GetFramebufferHeight() });
 		m_MousePosition = mousePosition;
 
 		// Reset bit fields

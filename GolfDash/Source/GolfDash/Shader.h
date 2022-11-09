@@ -12,6 +12,7 @@ namespace gd {
 		void Unbind() const;
 
 		void SetUniform(const std::string& uniformName, uint32 value) const;
+		void SetUniform(const std::string& uniformName, float value) const;
 		void SetUniform(const std::string& uniformName, const glm::mat4& value) const;
 	private:
 		uint32 m_ProgramID = 0;

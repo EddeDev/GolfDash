@@ -24,7 +24,9 @@ vec3 ApplyVignette(vec3 color, float falloff)
 
 void main()
 {
-	vec4 texColor = texture(u_Texture, Input.TexCoord);
-	texColor.rgb = ApplyVignette(texColor.rgb, 0.45);
-	o_Color = texColor;
+	vec3 color;
+	color = texture(u_Texture, Input.TexCoord).rgb;
+
+	color = ApplyVignette(color, 0.45);
+	o_Color = vec4(color, 1.0);
 }

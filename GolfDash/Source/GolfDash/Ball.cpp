@@ -11,7 +11,7 @@ namespace gd {
 	Ball::Ball(Ref<Level> level, const glm::vec2& position)
 		: m_Level(level), m_Position(position)
 	{
-		m_Texture = Ref<Texture>::Create("Assets/Textures/Ball.png");
+		m_Texture = Ref<Texture>::Create("Assets/Textures/NewStyle/Ball.psd");
 	
 		m_InitialScale = glm::vec2(0.1f);
 		m_Scale = m_InitialScale;
@@ -19,6 +19,7 @@ namespace gd {
 
 	void Ball::OnUpdate(float time, float deltaTime)
 	{
+		Ref<Window> window = GolfDash::Get().GetWindow();
 		Ref<Mouse> mouse = GolfDash::Get().GetMouse();
 
 		glm::vec2 orthoMousePos = mouse->GetMouseOrthoPosition(m_Level->GetCamera().ViewMatrix, m_Level->GetCamera().ProjectionMatrix);
@@ -96,6 +97,7 @@ namespace gd {
 					m_BallMagnitude = m_InitialBallMagnitude;
 				}
 				m_IsDragging = false;
+				// window->SetCursorVisible(false);
 			}
 		}
 
@@ -107,8 +109,12 @@ namespace gd {
 
 			if (m_BallMagnitude > 0.0f)
 				m_BallMagnitude -= friction * deltaTime;
+
 			if (m_BallMagnitude < 0.0f)
+			{
 				m_BallMagnitude = 0.0f;
+				// window->SetCursorVisible(true);
+			}
 
 			m_Velocity.x = (m_BallMagnitude / m_InitialBallMagnitude) * glm::abs(m_InitialVelocity.x) * m_Direction.x;
 			m_Velocity.y = (m_BallMagnitude / m_InitialBallMagnitude) * glm::abs(m_InitialVelocity.y) * m_Direction.y;
@@ -164,7 +170,7 @@ namespace gd {
 							m_Velocity = { m_Velocity.x, -m_Velocity.y };
 							m_Direction.y = -1.0f;
 						}
-
+						
 						if (nearestSide == Side::Left)
 						{
 							m_Velocity = { -m_Velocity.x, m_Velocity.y };
@@ -178,7 +184,7 @@ namespace gd {
 							m_Velocity = { m_Velocity.x, -m_Velocity.y };
 							m_Direction.y = 1.0f;
 						}
-
+						
 						if (nearestSide == Side::Left)
 						{
 							m_Velocity = { -m_Velocity.x, m_Velocity.y };
@@ -195,7 +201,7 @@ namespace gd {
 							m_Velocity = { m_Velocity.x, -m_Velocity.y };
 							m_Direction.y = -1.0f;
 						}
-
+						
 						if (nearestSide == Side::Right)
 						{
 							m_Velocity = { -m_Velocity.x, m_Velocity.y };
@@ -209,7 +215,7 @@ namespace gd {
 							m_Velocity = { m_Velocity.x, -m_Velocity.y };
 							m_Direction.y = 1.0f;
 						}
-
+						
 						if (nearestSide == Side::Right)
 						{
 							m_Velocity = { -m_Velocity.x, m_Velocity.y };
@@ -217,6 +223,8 @@ namespace gd {
 						}
 					}
 				}
+			
+				// m_InitialVelocity = m_Velocity;
 			}
 		}
 
@@ -239,7 +247,8 @@ namespace gd {
 
 				m_Position = glm::lerp(m_Position, m_Level->GetHole().GetPosition(), 1.5f * deltaTime);
 
-				if (m_TimeInHole >= 2.0f)
+				// if (m_TimeInHole >= 2.0f)
+				if (false)
 				{
 					m_IsInHole = false;
 					m_TimeInHole = 0.0f;
@@ -250,6 +259,10 @@ namespace gd {
 		}
 
 		m_Level->GetRenderer()->RenderQuad({ m_Position, -0.1f }, m_Scale, { 1.0f, 1.0f, 1.0f, 1.0f }, m_Texture);
+
+		// Draw shadow
+		glm::vec2 shadowOffset = { 0.0f, -0.01f };
+		m_Level->GetRenderer()->RenderQuad({ m_Position + shadowOffset, -0.11f }, m_Scale, { 0.0f, 0.0f, 0.0f, 0.2f }, m_Texture);
 	}
 
 }
