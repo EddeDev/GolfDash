@@ -33,7 +33,9 @@ namespace gd {
 		void AddMouseButtonPressCallback(const std::function<void(uint32 button)>& callback) { m_Data.MouseButtonPressCallbacks.push_back(callback); }
 		void AddMouseButtonReleaseCallback(const std::function<void(uint32 button)>& callback) { m_Data.MouseButtonReleaseCallbacks.push_back(callback); }
 		
+		void SetTitle(const std::string& title);
 		void SetVSync(bool enabled);
+
 		float GetTime() const;
 
 		bool IsMouseButtonDown(uint32 button) const;

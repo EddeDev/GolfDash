@@ -10,7 +10,7 @@ namespace gd {
 	{
 	public:
 		Ball() = default;
-		Ball(Ref<Level> level);
+		Ball(Ref<Level> level, const glm::vec2& position);
 
 		void OnUpdate(float time, float deltaTime);
 	private:

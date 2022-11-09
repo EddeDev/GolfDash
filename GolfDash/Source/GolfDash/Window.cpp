@@ -89,6 +89,15 @@ namespace gd {
 		glfwSwapBuffers(m_Window);
 	}
 
+	void Window::SetTitle(const std::string& title)
+	{
+		if (m_Data.Title != title)
+		{
+			glfwSetWindowTitle(m_Window, title.c_str());
+			m_Data.Title = title;
+		}
+	}
+
 	void Window::SetVSync(bool enabled)
 	{
 		if (m_Data.VSync != enabled)

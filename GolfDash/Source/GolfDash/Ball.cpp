@@ -8,8 +8,8 @@ namespace gd {
 
 #define PRINT(message) std::cout << message << std::endl
 
-	Ball::Ball(Ref<Level> level)
-		: m_Level(level)
+	Ball::Ball(Ref<Level> level, const glm::vec2& position)
+		: m_Level(level), m_Position(position)
 	{
 		m_Texture = Ref<Texture>::Create("Assets/Textures/Ball.png");
 	
@@ -65,18 +65,19 @@ namespace gd {
 				float distance = glm::distance(orthoMousePos, m_Position);
 				if (distance <= m_Scale.x)
 				{
-					PRINT("Ball was dragged within it's boundaries (no force applied!)");
+					// PRINT("Ball was dragged within it's boundaries (no force applied!)");
 				}
 				else if (distance >= maxDragDistance)
 				{
-					PRINT("Reached the max distance!");
+					// PRINT("Reached the max distance!");
 				}
 				else
 				{
-					PRINT("Stopped dragging, adding force! distance: " << distance);
+					// PRINT("Stopped dragging, adding force! distance: " << distance);
 
 					m_InitialVelocity = glm::normalize(m_Position - orthoMousePos);
 					m_InitialVelocity *= glm::sqrt(distance);
+					m_InitialVelocity *= distance + 1.0f;
 
 					// TODO: temp fix
 					if (m_InitialVelocity.x == 0.0f)
@@ -84,7 +85,7 @@ namespace gd {
 					if (m_InitialVelocity.y == 0.0f)
 						m_InitialVelocity.y += epsilon;
 
-					PRINT("Initial velocity: " << m_InitialVelocity.x << ", " << m_InitialVelocity.y);
+					// PRINT("Initial velocity: " << m_InitialVelocity.x << ", " << m_InitialVelocity.y);
 					m_Velocity = m_InitialVelocity;
 
 					m_Direction.x = m_Velocity.x / glm::abs(m_Velocity.x);

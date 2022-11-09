@@ -79,6 +79,8 @@ namespace gd {
 				{ "a_Position", ShaderDataType::Vec3 },
 				{ "a_Color", ShaderDataType::Vec4 }
 			};
+			pipelineConfig.LineWidth = 2.0f;
+			pipelineConfig.AntialiasedLines = true;
 			m_LinePipeline = Ref<Pipeline>::Create(pipelineConfig);
 
 			m_LineVertexBuffer = Ref<VertexBuffer>::Create(nullptr, s_MaxLineVertices * sizeof(LineVertex), VertexBufferUsage::Dynamic);
@@ -144,12 +146,6 @@ namespace gd {
 	void Renderer::BeginFrame(const Camera& camera)
 	{
 		m_ViewProjectionMatrix = camera.ViewProjectionMatrix;
-
-		// Clear swapchain
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-		glViewport(0, 0, m_ViewportWidth, m_ViewportHeight);
 
 		m_QuadVertexPointer = m_QuadVertexStorage;
 		m_QuadIndexCount = 0;

@@ -12,6 +12,7 @@ namespace gd {
 		windowConfig.Height = 1080;
 		windowConfig.Title = "Golf Dash";
 		windowConfig.Fullscreen = false;
+		windowConfig.VSync = true;
 
 		m_Window = Ref<Window>::Create(windowConfig);
 		m_Window->CreateContext();
@@ -31,14 +32,25 @@ namespace gd {
 	void GolfDash::Run()
 	{
 		float deltaTime = 0.0f;
+		float lastFrameTime = 0.0f;
 		float lastTime = 0.0f;
+
+		uint32 frames = 0;
 
 		m_Window->ShowWindow();
 		while (m_Running)
 		{
 			float time = m_Window->GetTime();
-			deltaTime = time - lastTime;
-			lastTime = time;
+			deltaTime = time - lastFrameTime;
+			lastFrameTime = time;
+
+			frames++;
+			while (time >= lastTime + 1.0f)
+			{
+				m_Window->SetTitle("GolfDash - " + std::to_string(frames) + " fps");
+				lastTime += 1.0f;
+				frames = 0;
+			}
 
 			m_Mouse->OnUpdate();
 			m_Window->PollEvents();
