@@ -4,6 +4,7 @@
 
 #include "Shader.h"
 #include "Pipeline.h"
+#include "Framebuffer.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "Texture.h"
@@ -17,7 +18,7 @@ namespace gd {
 		virtual ~Renderer();
 
 		void BeginFrame(const Camera& camera);
-		void EndFrame();
+		void EndFrame() const;
 
 		void RenderQuad(const glm::vec3& position, const glm::vec2& scale, const glm::vec4& color, Ref<Texture> texture, float tilingFactor = 1.0f);
 		void FlushQuads();
@@ -43,6 +44,10 @@ namespace gd {
 		Ref<Pipeline> m_QuadPipeline;
 		Ref<Pipeline> m_LinePipeline;
 		Ref<Pipeline> m_CompositePipeline;
+
+		// Framebuffers
+		Ref<Framebuffer> m_GeometryFramebuffer;
+		Ref<Framebuffer> m_CompositeFramebuffer;
 
 		// Constants
 		static const uint32 s_MaxQuads = 10000;
@@ -85,6 +90,9 @@ namespace gd {
 
 		std::array<Ref<Texture>, s_MaxTextureSlots> m_TextureSlots;
 		uint32 m_TextureSlotIndex = 1;
+
+		Ref<VertexBuffer> m_FullscreenQuadVertexBuffer;
+		Ref<IndexBuffer> m_FullscreenQuadIndexBuffer;
 	};
 
 }

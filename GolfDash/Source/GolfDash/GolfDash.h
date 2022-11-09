@@ -14,6 +14,7 @@ namespace gd {
 
 		void Run();
 
+		Ref<Window> GetWindow() const { return m_Window; }
 		Ref<Mouse> GetMouse() const { return m_Mouse; }
 		Ref<Level> GetLevel() const { return m_Level; }
 

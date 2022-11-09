@@ -146,8 +146,8 @@ namespace gd {
 		for (const auto& obstacle : obstacles)
 		{
 			// Debug lines
-			m_Level->GetRenderer()->RenderLine({ obstacle.GetLeftSidePosition(), -0.05f }, { 0.5f, 0.8f, 0.2f, 1.0f }, { obstacle.GetRightSidePosition(), -0.05f }, { 0.8f, 0.4f, 0.5f, 1.0f });
-			m_Level->GetRenderer()->RenderLine({ obstacle.GetTopSidePosition(), -0.05f }, { 0.5f, 0.8f, 0.2f, 1.0f }, { obstacle.GetBottomSidePosition(), -0.05f }, { 0.8f, 0.4f, 0.5f, 1.0f });
+			// m_Level->GetRenderer()->RenderLine({ obstacle.GetLeftSidePosition(), -0.05f }, { 0.5f, 0.8f, 0.2f, 1.0f }, { obstacle.GetRightSidePosition(), -0.05f }, { 0.8f, 0.4f, 0.5f, 1.0f });
+			// m_Level->GetRenderer()->RenderLine({ obstacle.GetTopSidePosition(), -0.05f }, { 0.5f, 0.8f, 0.2f, 1.0f }, { obstacle.GetBottomSidePosition(), -0.05f }, { 0.8f, 0.4f, 0.5f, 1.0f });
 
 			bool intersects = obstacle.Intersects(m_Position, m_Scale);
 			if (intersects)

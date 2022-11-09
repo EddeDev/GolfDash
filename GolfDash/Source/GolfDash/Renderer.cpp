@@ -7,12 +7,20 @@ namespace gd {
 
 	Renderer::Renderer()
 	{
-		// Default
+		FramebufferConfig geometryFramebufferConfig;
+		geometryFramebufferConfig.Attachments = { { TextureFormat::RGBA }, { TextureFormat::Depth24Stencil8 } };
+		geometryFramebufferConfig.Width = m_ViewportWidth;
+		geometryFramebufferConfig.Height = m_ViewportHeight;
+
+		m_GeometryFramebuffer = Ref<Framebuffer>::Create(geometryFramebufferConfig);
+
+		// Quad
 		{
 			m_QuadShader = Ref<Shader>::Create("Assets/Shaders/Quad_Vertex.glsl", "Assets/Shaders/Quad_Fragment.glsl");
 
 			PipelineConfig pipelineConfig;
 			pipelineConfig.Topology = PrimitiveTopology::Triangles;
+			pipelineConfig.Framebuffer = m_GeometryFramebuffer;
 			pipelineConfig.Shader = m_QuadShader;
 			pipelineConfig.InputLayout = {
 				{ "a_Position", ShaderDataType::Vec3 },
@@ -65,6 +73,7 @@ namespace gd {
 
 			PipelineConfig pipelineConfig;
 			pipelineConfig.Topology = PrimitiveTopology::Lines;
+			pipelineConfig.Framebuffer = m_GeometryFramebuffer;
 			pipelineConfig.Shader = m_LineShader;
 			pipelineConfig.InputLayout = {
 				{ "a_Position", ShaderDataType::Vec3 },
@@ -87,7 +96,13 @@ namespace gd {
 		{
 			m_CompositeShader = Ref<Shader>::Create("Assets/Shaders/Composite_Vertex.glsl", "Assets/Shaders/Composite_Fragment.glsl");
 
+			FramebufferConfig framebufferConfig;
+			framebufferConfig.SwapchainTarget = true;
+			m_CompositeFramebuffer = Ref<Framebuffer>::Create(framebufferConfig);
+
 			PipelineConfig pipelineConfig;
+			pipelineConfig.Topology = PrimitiveTopology::Triangles;
+			pipelineConfig.Framebuffer = m_CompositeFramebuffer;
 			pipelineConfig.Shader = m_CompositeShader;
 			pipelineConfig.InputLayout = {
 				{ "a_Position", ShaderDataType::Vec3 },
@@ -95,6 +110,26 @@ namespace gd {
 			};
 			m_CompositePipeline = Ref<Pipeline>::Create(pipelineConfig);
 		}
+
+		struct FullscreenQuadVertex
+		{
+			glm::vec3 Position;
+			glm::vec2 TexCoord;
+		};
+
+		FullscreenQuadVertex vertices[4];
+		vertices[0] = { { -1.0f, -1.0f, 0.0f }, { 0.0f, 0.0f } };
+		vertices[1] = { {  1.0f, -1.0f, 0.0f }, { 1.0f, 0.0f } };
+		vertices[2] = { {  1.0f,  1.0f, 0.0f }, { 1.0f, 1.0f } };
+		vertices[3] = { { -1.0f,  1.0f, 0.0f }, { 0.0f, 1.0f } };
+
+		uint32 indices[6] = {
+			0, 1, 2,
+			2, 3, 0
+		};
+
+		m_FullscreenQuadVertexBuffer = Ref<VertexBuffer>::Create(vertices, 4 * sizeof(FullscreenQuadVertex));
+		m_FullscreenQuadIndexBuffer = Ref<IndexBuffer>::Create(indices, 6 * sizeof(uint32));
 
 		// White texture
 		uint32 whiteTextureData = 0xffffffff;
@@ -110,6 +145,7 @@ namespace gd {
 	{
 		m_ViewProjectionMatrix = camera.ViewProjectionMatrix;
 
+		// Clear swapchain
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -124,8 +160,10 @@ namespace gd {
 		m_TextureSlotIndex = 1;
 	}
 
-	void Renderer::EndFrame()
+	void Renderer::EndFrame() const
 	{
+		m_GeometryFramebuffer->Bind();
+
 		if (m_QuadIndexCount)
 		{
 			size_t bufferSize = static_cast<size_t>((uint8*)m_QuadVertexPointer - (uint8*)m_QuadVertexStorage);
@@ -157,6 +195,22 @@ namespace gd {
 			m_LineShader->SetUniform("u_Uniforms.ViewProjectionMatrix", m_ViewProjectionMatrix);
 
 			m_LinePipeline->DrawIndexed(m_LineIndexCount);
+		}
+
+		// Post-processing
+		{
+			m_CompositeFramebuffer->Bind();
+
+			m_FullscreenQuadVertexBuffer->Bind();
+			m_CompositePipeline->Bind();
+			m_FullscreenQuadIndexBuffer->Bind();
+
+			m_GeometryFramebuffer->BindAttachment();
+
+			m_CompositeShader->Bind();
+			m_CompositeShader->SetUniform("u_Texture", m_GeometryFramebuffer->GetAttachmentID());
+
+			m_CompositePipeline->DrawIndexed(m_FullscreenQuadIndexBuffer->GetCount());
 		}
 	}
 
@@ -273,8 +327,10 @@ namespace gd {
 	{
 		if (m_ViewportWidth != width || m_ViewportHeight != height)
 		{
-			// resize framebuffers here
+			m_GeometryFramebuffer->Resize(width, height);
+			m_CompositeFramebuffer->Resize(width, height);
 
+			// resize framebuffers here
 			m_ViewportWidth = width;
 			m_ViewportHeight = height;
 		}

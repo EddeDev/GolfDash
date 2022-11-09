@@ -117,7 +117,7 @@ namespace gd {
 		glBindVertexArray(0);
 	}
 	
-	void Pipeline::DrawIndexed(uint32 count)
+	void Pipeline::DrawIndexed(uint32 count) const
 	{
 		glDrawElements(Utils::OpenGLPrimitiveTopology(m_Config.Topology), count, GL_UNSIGNED_INT, nullptr);
 	}

@@ -11,11 +11,22 @@ namespace gd {
 		m_Ball = Ball(this);
 		m_Hole = Hole(this, { 0.5f, 0.5f });
 
-		// TODO: level specifications
+		// TODO List: 
+		// - Framebuffers
+		// - Post processing effects
+		// - Obstacle textures
+		// - Boost pads
+		// - Level specifications
 
 		Obstacle& obstacle = m_Obstacles.emplace_back();
 		obstacle.Position = { -0.5f, -0.5f };
+		obstacle.Color = { 0.41f, 0.28f, 0.19f, 1.0f };
 		obstacle.Scale *= 0.5f;
+
+		Obstacle& obstacle2 = m_Obstacles.emplace_back();
+		obstacle2.Position = { 0.5f, -0.5f };
+		obstacle.Color = { 0.41f, 0.28f, 0.19f, 1.0f };
+		obstacle2.Scale *= 0.3f;
 	}
 
 	void Level::OnUpdate(float time, float deltaTime)

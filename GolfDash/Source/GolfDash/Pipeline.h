@@ -1,6 +1,8 @@
 #pragma once
 
+#include "Framebuffer.h"
 #include "Shader.h"
+
 #include "VertexInputLayout.h"
 
 namespace gd {
@@ -31,6 +33,7 @@ namespace gd {
 	struct PipelineConfig
 	{
 		VertexInputLayout InputLayout;
+		Ref<Framebuffer> Framebuffer;
 		Ref<Shader> Shader;
 		PrimitiveTopology Topology = PrimitiveTopology::Triangles;
 		DepthComparisonFunc DepthCompareFunc = DepthComparisonFunc::Less;
@@ -52,7 +55,7 @@ namespace gd {
 		void Bind() const;
 		void Unbind() const;
 
-		void DrawIndexed(uint32 count);
+		void DrawIndexed(uint32 count) const;
 	private:
 		PipelineConfig m_Config;
 
