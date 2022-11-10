@@ -11,6 +11,9 @@ layout(location = 0) in VertexOutput Input;
 
 layout(binding = 0) uniform sampler2D u_Texture;
 
+layout(location = 1) uniform float u_Time;
+layout(location = 2) uniform float u_Wave;
+
 vec3 ApplyVignette(vec3 color, float falloff)
 {
 	vec2 resolution = vec2(textureSize(u_Texture, 0));
@@ -24,8 +27,12 @@ vec3 ApplyVignette(vec3 color, float falloff)
 
 void main()
 {
-	vec3 color;
-	color = texture(u_Texture, Input.TexCoord).rgb;
+	vec2 texCoord = Input.TexCoord;
+	
+	// Wave effect
+	texCoord.y = (texCoord.y + u_Wave * sin(u_Time + 10.0 * texCoord.x));
+
+	vec3 color = texture(u_Texture, texCoord).rgb;
 
 	color = ApplyVignette(color, 0.45);
 	o_Color = vec4(color, 1.0);

@@ -21,6 +21,9 @@ namespace gd {
 			return;
 		}
 
+		m_Width = width;
+		m_Height = height;
+
 		uint32 format = 0;
 		uint32 internalFormat = 0;
 		if (channels == STBI_rgb)
@@ -47,6 +50,7 @@ namespace gd {
 	}
 
 	Texture::Texture(uint32 width, uint32 height, const void* data)
+		: m_Width(width), m_Height(height)
 	{
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_TextureID);
 		glTextureStorage2D(m_TextureID, 1, GL_RGBA8, width, height);

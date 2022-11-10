@@ -20,7 +20,7 @@ namespace gd {
 		glm::vec2 stickOffset = { 0.052f, 0.08f };
 		m_Level->GetRenderer()->RenderQuad({ m_Position + stickOffset, -0.05f}, glm::vec2(0.2f), glm::vec4(1.0f), m_FlagStickTexture);
 
-		glm::vec2 flagOffset = stickOffset + glm::vec2(-0.049f, 0.04f);
+		glm::vec2 flagOffset = stickOffset + glm::vec2(-0.049f, 0.039f);
 		m_Level->GetRenderer()->RenderQuad({ m_Position + flagOffset, -0.04f }, glm::vec2(0.1f), glm::vec4(1.0f), m_FlagTexture, 1.0f, true);
 	}
 

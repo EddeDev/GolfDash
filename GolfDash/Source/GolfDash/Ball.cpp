@@ -98,6 +98,7 @@ namespace gd {
 					m_BallMagnitude = m_InitialBallMagnitude;
 				}
 				m_IsDragging = false;
+				m_Strokes++;
 				// window->SetCursorVisible(false);
 			}
 		}
@@ -248,13 +249,15 @@ namespace gd {
 
 				m_Position = glm::lerp(m_Position, m_Level->GetHole().GetPosition(), 1.5f * deltaTime);
 
-				// if (m_TimeInHole >= 2.0f)
-				if (false)
+				if (m_TimeInHole >= 3.0f)
 				{
 					m_IsInHole = false;
 					m_TimeInHole = 0.0f;
-					m_Position = { 0.0f, 0.0f };
-					m_Scale = m_InitialScale;
+					
+					m_IsReadyForNextLevel = true;
+					
+					// m_Position = { 0.0f, 0.0f };
+					// m_Scale = m_InitialScale;
 				}
 			}
 		}

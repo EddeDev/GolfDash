@@ -62,7 +62,7 @@ namespace gd {
 		result.x = (result.x / (float)m_Window->GetFramebufferWidth()) * 2.0f - 1.0f;
 		result.y = (result.y / (float)m_Window->GetFramebufferHeight()) * 2.0f - 1.0f;
 		result.y = -result.y;
-		result = glm::inverse(viewMatrix * projectionMatrix) * result;
+		result = glm::inverse(viewMatrix) * glm::inverse(projectionMatrix) * result;
 		return result;
 	}
 

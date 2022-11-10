@@ -209,6 +209,8 @@ namespace gd {
 
 			m_CompositeShader->Bind();
 			m_CompositeShader->SetUniform("u_Texture", m_GeometryFramebuffer->GetAttachmentID());
+			m_CompositeShader->SetUniform("u_Time", GolfDash::Get().GetWindow()->GetTime());
+			m_CompositeShader->SetUniform("u_Wave", m_CompositeWave);
 
 			m_CompositePipeline->DrawIndexed(m_FullscreenQuadIndexBuffer->GetCount());
 		}

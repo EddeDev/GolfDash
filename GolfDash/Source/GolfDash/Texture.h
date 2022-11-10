@@ -11,8 +11,13 @@ namespace gd {
 
 		void Bind(uint32 slot = 0) const;
 		void Unbind(uint32 slot = 0) const;
+
+		uint32 GetWidth() const { return m_Width; }
+		uint32 GetHeight() const { return m_Height; }
 	private:
 		uint32 m_TextureID = 0;
+		uint32 m_Width = 0;
+		uint32 m_Height = 0;
 	};
 
 }

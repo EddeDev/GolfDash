@@ -13,13 +13,24 @@ namespace gd {
 		Ball(Ref<Level> level, const glm::vec2& position);
 
 		void OnUpdate(float time, float deltaTime);
+
+		bool IsDragging() const { return m_IsDragging; }
+		uint32 GetStrokes() const { return m_Strokes; }
+
+		bool IsInHole() const { return m_IsInHole; }
+		bool IsReadyForNextLevel() const { return m_IsReadyForNextLevel; }
+		bool HasWon() const { return IsInHole() && IsReadyForNextLevel(); }
+		float GetTimeInHole() const { return m_TimeInHole; }
 	private:
 		Ref<Level> m_Level;
 		Ref<Texture> m_Texture;
 
 		bool m_IsDragging = false;
 		bool m_IsInHole = false;
+		bool m_IsReadyForNextLevel = false;
 		float m_TimeInHole = 0.0f;
+
+		uint32 m_Strokes = 0;
 
 		glm::vec2 m_Position = glm::vec2(0.0f);
 		glm::vec2 m_Scale = glm::vec2(0.1f);
