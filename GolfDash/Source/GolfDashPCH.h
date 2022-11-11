@@ -7,12 +7,14 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <iterator>
 #include <array>
 #include <queue>
 #include <map>
 #include <unordered_map>
 #include <unordered_set>
 #include <functional>
+#include <random>
 
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -23,4 +25,5 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "GolfDash/PointerWrappers.h"
-#include "GolfDash/PointerWrappers.h"
+#include "GolfDash/PrimitiveTypes.h"
+#include "GolfDash/GlobalConstants.h"

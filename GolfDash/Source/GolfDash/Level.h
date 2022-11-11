@@ -11,6 +11,8 @@ namespace gd {
 
 	struct LevelSpecification
 	{
+		uint32 Index;
+
 		glm::vec2 BallPosition;
 		glm::vec2 HolePosition;
 
@@ -57,14 +59,21 @@ namespace gd {
 		const std::vector<Obstacle>& GetObstacles() const { return m_Obstacles; }
 	private:
 		void RenderBackground();
+		void RenderLevelText();
 		void RenderLogo();
 		void RenderObstacles();
+
+		void Clear();
+
+		Ref<Texture> GetRandomFeedbackTexture() const;
 	private:
 		Ref<Renderer> m_Renderer;
 		Ref<Texture> m_BackgroundTexture;
+		Ref<Texture> m_LevelTexture;
 		Ref<Texture> m_LogoTexture;
 		Ref<Texture> m_HoleInOneTexture;
-		std::vector<Ref<Texture>> m_FeedbackTextures;
+		std::unordered_map<uint32, std::vector<Ref<Texture>>> m_FeedbackTextures;
+		Ref<Texture> m_CurrentFeedbackTexture;
 
 		// Entities
 		Camera m_Camera;
@@ -72,6 +81,8 @@ namespace gd {
 		Hole m_Hole;
 
 		std::vector<Obstacle> m_Obstacles;
+
+		friend class LevelManager;
 	};
 
 	class LevelManager : public ReferenceCounted

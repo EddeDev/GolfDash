@@ -82,7 +82,7 @@ namespace gd {
 				{ "a_Position", ShaderDataType::Vec3 },
 				{ "a_Color", ShaderDataType::Vec4 }
 			};
-			pipelineConfig.LineWidth = 2.0f;
+			pipelineConfig.LineWidth = 5.0f;
 			pipelineConfig.AntialiasedLines = true;
 			m_LinePipeline = Ref<Pipeline>::Create(pipelineConfig);
 

@@ -11,8 +11,30 @@ namespace gd {
 
 		m_LogoTexture = Ref<Texture>::Create("Assets/Textures/GUI/Logo_Text.psd");
 		m_HoleInOneTexture = Ref<Texture>::Create("Assets/Textures/GUI/HoleInOne_Text.psd");
-	
-		m_FeedbackTextures.push_back(Ref<Texture>::Create("Assets/Textures/GUI/Feedback_Amazing.psd"));
+
+		m_FeedbackTextures[1] = {
+			Ref<Texture>::Create("Assets/Textures/GUI/Feedback_Amazing.psd"),
+			Ref<Texture>::Create("Assets/Textures/GUI/Feedback_Excellent.psd"),
+			Ref<Texture>::Create("Assets/Textures/GUI/Feedback_Super.psd")
+		};
+
+		m_FeedbackTextures[2] = {
+
+			Ref<Texture>::Create("Assets/Textures/GUI/Feedback_Great.psd"),
+			Ref<Texture>::Create("Assets/Textures/GUI/Feedback_ThatsGreat.psd")
+		};
+
+		m_FeedbackTextures[3] = {
+			Ref<Texture>::Create("Assets/Textures/GUI/Feedback_KeepItUp.psd"),
+			Ref<Texture>::Create("Assets/Textures/GUI/Feedback_Fine.psd")
+		};
+
+		m_FeedbackTextures[4] = {
+			Ref<Texture>::Create("Assets/Textures/GUI/Feedback_KeepItUp.psd"),
+		};
+
+		std::string levelTexturePath = "Assets/Textures/GUI/Level" + std::to_string(specification.Index) + "_Text.psd";
+		m_LevelTexture = Ref<Texture>::Create(levelTexturePath);
 	}
 
 	void Level::OnUpdate(float time, float deltaTime)
@@ -20,6 +42,7 @@ namespace gd {
 		m_Renderer->BeginFrame(m_Camera);
 
 		RenderBackground();
+		RenderLevelText();
 		RenderLogo();
 		RenderObstacles();
 		m_Ball.OnUpdate(time, deltaTime);
@@ -32,7 +55,7 @@ namespace gd {
 			if (m_Ball.IsReadyForNextLevel())
 				m_Renderer->SetCompositeWave(0.0f);
 			else
-				m_Renderer->SetCompositeWave(t * 0.02f);
+				m_Renderer->SetCompositeWave(t * 0.005f);
 
 			if (m_Ball.GetStrokes() == 1)
 			{
@@ -45,19 +68,38 @@ namespace gd {
 				float tilingFactor = 1.0f; // glm::length(scale);
 
 				m_Renderer->RenderQuad({ 0.0f, 0.0f, -0.01f }, scale, glm::vec4(t), m_HoleInOneTexture, tilingFactor);
+			}
 
-				{
-					Ref<Texture> feedback = m_FeedbackTextures[0];
+			if (!m_CurrentFeedbackTexture)
+				m_CurrentFeedbackTexture = GetRandomFeedbackTexture();
+		
+			if (m_CurrentFeedbackTexture)
+			{
+				glm::vec2 scale = glm::normalize(glm::vec2((float)m_CurrentFeedbackTexture->GetWidth(), (float)m_CurrentFeedbackTexture->GetHeight()));
+				scale *= t;
 
-					glm::vec2 scale = glm::normalize(glm::vec2((float)feedback->GetWidth(), (float)feedback->GetHeight()));
-					scale *= t;
-
-					m_Renderer->RenderQuad({ 0.0f, -0.35f, -0.01f }, scale, glm::vec4(t), feedback, tilingFactor);
-				}
+				m_Renderer->RenderQuad({ 0.0f, -0.35f, -0.01f }, scale, glm::vec4(t * 0.8f, t * 0.8f, 0.6f - t * 0.8f, 1.0f), m_CurrentFeedbackTexture, 1.0f);
 			}
 		}
 
 		m_Renderer->EndFrame();
+	}
+
+	void Level::Clear()
+	{
+		m_CurrentFeedbackTexture = nullptr;
+	}
+
+	Ref<Texture> Level::GetRandomFeedbackTexture() const
+	{
+		static std::random_device device;
+		static std::mt19937 gen(device());
+
+		uint32 feedbackTextureIndex = glm::clamp(m_Ball.GetStrokes(), static_cast<uint32>(1), static_cast<uint32>(m_FeedbackTextures.size()) - 1);
+		std::vector<Ref<Texture>> feedbacks = m_FeedbackTextures.at(feedbackTextureIndex);
+
+		std::uniform_int_distribution<> dist(0, feedbacks.size() - 1);
+		return feedbacks[dist(gen)];
 	}
 
 	void Level::SetViewportSize(uint32 width, uint32 height)
@@ -80,6 +122,26 @@ namespace gd {
 		}
 	}
 
+	void Level::RenderLevelText()
+	{
+		if (!m_LevelTexture)
+		{
+			std::cout << "Texture is null!" << std::endl;
+			return;
+		}
+
+		glm::vec2 scale = glm::normalize(glm::vec2((float)m_LevelTexture->GetWidth(), (float)m_LevelTexture->GetHeight()));
+		scale *= 0.5f;
+
+		glm::vec2 position = { 0.0f, 1.0f + 0.05f - (scale.y * 0.5f) };
+	
+		m_Renderer->RenderQuad(glm::vec3(position, -0.15f), scale, glm::vec4(1.0f), m_LevelTexture);
+
+		// render shadow
+		glm::vec2 shadowOffset = { 0.0f, GD_SHADOW_OFFSET_Y };
+		m_Renderer->RenderQuad(glm::vec3(position + shadowOffset, -0.16f), scale, glm::vec4(0.0f, 0.0f, 0.0f, GD_SHADOW_ALPHA), m_LevelTexture);
+	}
+
 	void Level::RenderLogo()
 	{
 		glm::vec2 logoScale = glm::normalize(glm::vec2((float)m_LogoTexture->GetWidth(), (float)m_LogoTexture->GetHeight()));
@@ -87,7 +149,11 @@ namespace gd {
 
 		glm::vec2 logoPosition = { -m_Camera.GetAspectRatio() + (logoScale.x * 0.5f), 1.0f + 0.05f - (logoScale.y * 0.5f) };
 
-		m_Renderer->RenderQuad(glm::vec3(logoPosition, -0.1f), logoScale, glm::vec4(1.0f), m_LogoTexture);
+		m_Renderer->RenderQuad(glm::vec3(logoPosition, -0.15f), logoScale, glm::vec4(1.0f), m_LogoTexture);
+
+		// render shadow
+		glm::vec2 shadowOffset = { 0.0f, GD_SHADOW_OFFSET_Y };
+		m_Renderer->RenderQuad(glm::vec3(logoPosition + shadowOffset, -0.16f), logoScale, glm::vec4(0.0f, 0.0f, 0.0f, GD_SHADOW_ALPHA), m_LogoTexture);
 	}
 
 	void Level::RenderObstacles()
@@ -95,6 +161,10 @@ namespace gd {
 		for (auto& obstacle : m_Obstacles)
 		{
 			m_Renderer->RenderQuad(glm::vec3(obstacle.Position, -0.1f), obstacle.Scale, obstacle.Color, obstacle.Texture);
+
+			// render shadow
+			glm::vec2 shadowOffset = { 0.0f, GD_SHADOW_OFFSET_Y };
+			m_Renderer->RenderQuad(glm::vec3(obstacle.Position + shadowOffset, -0.11f), obstacle.Scale, glm::vec4(0.0f, 0.0f, 0.0f, GD_SHADOW_ALPHA), obstacle.Texture);
 		}
 	}
 
@@ -127,7 +197,7 @@ namespace gd {
 			Ref<Level> nextLevel = GetLevel(nextLevelType);
 			if (nextLevel)
 			{
-				// clear last level
+				level->Clear();
 
 				SetActiveLevelType(nextLevelType);
 			}

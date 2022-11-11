@@ -66,6 +66,7 @@ namespace gd {
 	Ref<Level> GolfDash::CreateLevel1() const
 	{
 		LevelSpecification levelSpec;
+		levelSpec.Index = 1;
 		levelSpec.BallPosition = { -1.0f, 0.0f };
 		levelSpec.HolePosition = { 1.0f, 0.0f };
 		levelSpec.BackgroundTexture = Ref<Texture>::Create("Assets/Textures/NewStyle/BG_Tiles_Default.psd");
@@ -127,6 +128,7 @@ namespace gd {
 	Ref<Level> GolfDash::CreateLevel2() const
 	{
 		LevelSpecification levelSpec;
+		levelSpec.Index = 2;
 		levelSpec.BallPosition = { -1.0f, -0.5f };
 		levelSpec.HolePosition = { 1.0f, -0.5f };
 		levelSpec.BackgroundTexture = Ref<Texture>::Create("Assets/Textures/NewStyle/BG_Tiles_Default.psd");

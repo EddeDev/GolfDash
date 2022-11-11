@@ -265,8 +265,8 @@ namespace gd {
 		m_Level->GetRenderer()->RenderQuad({ m_Position, -0.1f }, m_Scale, { 1.0f, 1.0f, 1.0f, 1.0f }, m_Texture);
 
 		// Draw shadow
-		glm::vec2 shadowOffset = { 0.0f, -0.01f };
-		m_Level->GetRenderer()->RenderQuad({ m_Position + shadowOffset, -0.11f }, m_Scale, { 0.0f, 0.0f, 0.0f, 0.2f }, m_Texture);
+		glm::vec2 shadowOffset = { GD_SHADOW_OFFSET_X, GD_SHADOW_OFFSET_Y };
+		m_Level->GetRenderer()->RenderQuad({ m_Position + shadowOffset, -0.11f }, m_Scale, { 0.0f, 0.0f, 0.0f, GD_SHADOW_ALPHA }, m_Texture);
 	}
 
 }
