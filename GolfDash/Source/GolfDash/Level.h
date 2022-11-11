@@ -6,6 +6,7 @@
 #include "Ball.h"
 #include "Hole.h"
 #include "Obstacle.h"
+#include "BoostPad.h"
 
 namespace gd {
 
@@ -17,6 +18,7 @@ namespace gd {
 		glm::vec2 HolePosition;
 
 		std::vector<Obstacle> Obstacles;
+		std::vector<BoostPad> BoostPads;
 
 		Ref<Texture> BackgroundTexture;
 
@@ -57,23 +59,31 @@ namespace gd {
 
 		std::vector<Obstacle>& GetObstacles() { return m_Obstacles; }
 		const std::vector<Obstacle>& GetObstacles() const { return m_Obstacles; }
+
+		std::vector<BoostPad>& GetBoostPads() { return m_BoostPads; }
+		const std::vector<BoostPad>& GetBoostPads() const { return m_BoostPads; }
 	private:
 		void RenderBackground();
 		void RenderLevelText();
 		void RenderLogo();
 		void RenderObstacles();
+		void RenderBoostPads();
 
 		void Clear();
 
 		Ref<Texture> GetRandomFeedbackTexture() const;
 	private:
 		Ref<Renderer> m_Renderer;
+
+		std::unordered_map<uint32, std::vector<Ref<Texture>>> m_FeedbackTextures;
+
+		// Textures
 		Ref<Texture> m_BackgroundTexture;
 		Ref<Texture> m_LevelTexture;
 		Ref<Texture> m_LogoTexture;
 		Ref<Texture> m_HoleInOneTexture;
-		std::unordered_map<uint32, std::vector<Ref<Texture>>> m_FeedbackTextures;
 		Ref<Texture> m_CurrentFeedbackTexture;
+		Ref<Texture> m_BoostPadTexture;
 
 		// Entities
 		Camera m_Camera;
@@ -81,6 +91,7 @@ namespace gd {
 		Hole m_Hole;
 
 		std::vector<Obstacle> m_Obstacles;
+		std::vector<BoostPad> m_BoostPads;
 
 		friend class LevelManager;
 	};

@@ -6,6 +6,18 @@
 
 namespace gd {
 
+	namespace Utils {
+
+		static glm::vec3 EulerAnglesToDirection(const glm::vec3& eulerAngles)
+		{
+			glm::mat4 rotationMatrix = glm::toMat4(glm::quat(glm::radians(eulerAngles)));
+			glm::mat4 offsetMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+			glm::mat4 transform = rotationMatrix * offsetMatrix;
+			return glm::normalize(-transform[3]);
+		}
+
+	}
+
 #define PRINT(message) std::cout << message << std::endl
 
 	Ball::Ball(Ref<Level> level, const glm::vec2& position)
@@ -230,9 +242,27 @@ namespace gd {
 			}
 		}
 
+		const auto& boostPads = m_Level->GetBoostPads();
+		for (auto& boostPad : boostPads)
+		{
+			// Debug lines
+			// m_Level->GetRenderer()->RenderLine({ boostPad.GetLeftSidePosition(), -0.05f }, { 0.5f, 0.8f, 0.2f, 1.0f }, { boostPad.GetRightSidePosition(), -0.05f }, { 0.8f, 0.4f, 0.5f, 1.0f });
+			// m_Level->GetRenderer()->RenderLine({ boostPad.GetTopSidePosition(), -0.05f }, { 0.5f, 0.8f, 0.2f, 1.0f }, { boostPad.GetBottomSidePosition(), -0.05f }, { 0.8f, 0.4f, 0.5f, 1.0f });
+
+			bool intersects = boostPad.Intersects(m_Position, m_Scale);
+			if (intersects)
+			{
+				const float force = 2.5f;
+
+				// glm::vec2 direction = { glm::cos(boostPad.Rotation), glm::sin(boostPad.Rotation) };
+
+				// PRINT("Boost Direction: " << direction.x << ", " << direction.y);
+			}
+		}
+
 		if (m_BallMagnitude < 1.0f)
 		{
-			float size = 0.35f;
+			float size = 0.4f;
 			if (glm::epsilonEqual(m_Position, m_Level->GetHole().GetPosition(), m_InitialScale * size) == glm::bvec2(true))
 			{
 				if (!m_IsInHole)
@@ -256,8 +286,9 @@ namespace gd {
 					
 					m_IsReadyForNextLevel = true;
 					
-					// m_Position = { 0.0f, 0.0f };
-					// m_Scale = m_InitialScale;
+					// Reset transform
+					m_Position = { 0.0f, 0.0f };
+					m_Scale = m_InitialScale;
 				}
 			}
 		}

@@ -26,8 +26,9 @@ namespace gd {
 
 		// Create level manager
 		m_LevelManager = Ref<LevelManager>::Create();
-		m_LevelManager->BindLevel(LevelType::Level1, CreateLevel1(), true);
+		m_LevelManager->BindLevel(LevelType::Level1, CreateLevel1());
 		m_LevelManager->BindLevel(LevelType::Level2, CreateLevel2());
+		m_LevelManager->BindLevel(LevelType::Level3, CreateLevel3(), true);
 
 		m_Window->AddFramebufferSizeCallback([this](uint32 width, uint32 height) { m_LevelManager->SetViewportSize(width, height); });
 		m_LevelManager->SetViewportSize(m_Window->GetFramebufferWidth(), m_Window->GetFramebufferHeight());
@@ -178,7 +179,20 @@ namespace gd {
 		obstacle7.Scale.y = 0.25f;
 
 		return Ref<Level>::Create(levelSpec);
+	}
 
+	Ref<Level> GolfDash::CreateLevel3() const
+	{
+		LevelSpecification levelSpec;
+		levelSpec.Index = 3;
+		levelSpec.BallPosition = { -1.0f, 0.5f };
+		levelSpec.HolePosition = { 1.0f, 0.0f };
+		levelSpec.BackgroundTexture = Texture::Create("Assets/Textures/BG_Tiles_Default.psd");
+
+		BoostPad& boostPad = levelSpec.BoostPads.emplace_back();
+		boostPad.Rotation = -90.0f;
+
+		return Ref<Level>::Create(levelSpec);
 	}
 
 	gd::GolfDash* GolfDash::s_Instance;

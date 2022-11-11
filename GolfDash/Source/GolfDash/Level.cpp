@@ -4,7 +4,7 @@
 namespace gd {
 
 	Level::Level(const LevelSpecification& specification)
-		: m_Obstacles(specification.Obstacles), m_BackgroundTexture(specification.BackgroundTexture)
+		: m_Obstacles(specification.Obstacles), m_BoostPads(specification.BoostPads), m_BackgroundTexture(specification.BackgroundTexture)
 	{
 		m_Ball = Ball(this, specification.BallPosition);
 		m_Hole = Hole(this, specification.HolePosition);
@@ -35,6 +35,8 @@ namespace gd {
 
 		std::string levelTexturePath = "Assets/Textures/Level" + std::to_string(specification.Index) + "_Text.psd";
 		m_LevelTexture = Texture::Create(levelTexturePath);
+	
+		m_BoostPadTexture = Texture::Create("Assets/Textures/BoostPad.psd");
 	}
 
 	void Level::OnUpdate(float time, float deltaTime)
@@ -44,6 +46,7 @@ namespace gd {
 		RenderBackground();
 		RenderLevelText();
 		RenderLogo();
+		RenderBoostPads();
 		RenderObstacles();
 		m_Ball.OnUpdate(time, deltaTime);
 		m_Hole.OnUpdate(time);
@@ -165,6 +168,14 @@ namespace gd {
 			// render shadow
 			glm::vec2 shadowOffset = { 0.0f, GD_SHADOW_OFFSET_Y };
 			m_Renderer->RenderQuad(glm::vec3(obstacle.Position + shadowOffset, -0.11f), obstacle.Scale, glm::vec4(0.0f, 0.0f, 0.0f, GD_SHADOW_ALPHA), obstacle.Texture);
+		}
+	}
+
+	void Level::RenderBoostPads()
+	{
+		for (auto& boostPad : m_BoostPads)
+		{
+			m_Renderer->RenderQuad(glm::vec3(boostPad.Position, -0.11f), boostPad.Scale, boostPad.Rotation, glm::vec4(1.0f), m_BoostPadTexture);
 		}
 	}
 

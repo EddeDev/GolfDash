@@ -287,6 +287,52 @@ namespace gd {
 		m_QuadIndexCount += 6;
 	}
 
+	void Renderer::RenderQuad(const glm::vec3& position, const glm::vec2& scale, float rotation, const glm::vec4& color, Ref<Texture> texture, float tilingFactor /*= 1.0f*/, bool waveEffect /*= false*/)
+	{
+		if (m_QuadIndexCount >= s_MaxQuadIndices)
+			FlushQuads();
+
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
+			* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), { 0.0f, 0.0f, 1.0f })
+			* glm::scale(glm::mat4(1.0f), glm::vec3(scale, 1.0f));
+
+		float textureIndex = 0.0f;
+		if (texture)
+		{
+			for (uint32 i = 1; i < m_TextureSlotIndex; i++)
+			{
+				if (m_TextureSlots[i].Get() == texture.Get())
+				{
+					textureIndex = static_cast<float>(i);
+					break;
+				}
+			}
+
+			if (textureIndex == 0.0f)
+			{
+				if (m_TextureSlotIndex >= s_MaxTextureSlots)
+					FlushQuads();
+
+				textureIndex = (float)m_TextureSlotIndex;
+				m_TextureSlots[m_TextureSlotIndex] = texture;
+				m_TextureSlotIndex++;
+			}
+		}
+
+		for (size_t i = 0; i < 4; i++)
+		{
+			m_QuadVertexPointer->Position = transform * m_QuadVertexPositions[i];
+			m_QuadVertexPointer->Color = color;
+			m_QuadVertexPointer->TexCoord = m_QuadTextureCoords[i];
+			m_QuadVertexPointer->TexIndex = textureIndex;
+			m_QuadVertexPointer->TilingFactor = tilingFactor;
+			m_QuadVertexPointer->Wave = waveEffect ? 1.0f : 0.0f;
+			m_QuadVertexPointer++;
+		}
+
+		m_QuadIndexCount += 6;
+	}
+
 	void Renderer::FlushLines()
 	{
 		if (m_LineIndexCount)
