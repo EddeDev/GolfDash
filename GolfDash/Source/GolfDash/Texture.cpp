@@ -41,10 +41,13 @@ namespace gd {
 		glTextureStorage2D(m_TextureID, 1, internalFormat, width, height);
 
 		glTextureSubImage2D(m_TextureID, 0, 0, 0, width, height, format, GL_UNSIGNED_BYTE, static_cast<const void*>(data));
-		glGenerateTextureMipmap(m_TextureID);
+		// glGenerateTextureMipmap(m_TextureID);
 
 		glTextureParameteri(m_TextureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTextureParameteri(m_TextureID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 
 		stbi_image_free(data);
 	}
@@ -56,10 +59,13 @@ namespace gd {
 		glTextureStorage2D(m_TextureID, 1, GL_RGBA8, width, height);
 
 		glTextureSubImage2D(m_TextureID, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
-		glGenerateTextureMipmap(m_TextureID);
+		// glGenerateTextureMipmap(m_TextureID);
 
 		glTextureParameteri(m_TextureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTextureParameteri(m_TextureID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	}
 
 	Texture::~Texture()
@@ -76,5 +82,17 @@ namespace gd {
 	{
 		glBindTextureUnit(slot, 0);
 	}
+
+	Ref<Texture> Texture::Create(const std::string& filepath)
+	{
+		if (s_TextureMap.find(filepath) != s_TextureMap.end())
+			return s_TextureMap.at(filepath);
+
+		Ref<Texture> texture = Ref<Texture>::Create(filepath);
+		s_TextureMap[filepath] = texture;
+		return texture;
+	}
+
+	std::unordered_map<std::string, Ref<Texture>> Texture::s_TextureMap;
 
 }

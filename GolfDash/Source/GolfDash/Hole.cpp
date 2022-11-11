@@ -8,9 +8,9 @@ namespace gd {
 	Hole::Hole(Ref<Level> level, const glm::vec2& position)
 		: m_Level(level), m_Position(position)
 	{
-		m_Texture = Ref<Texture>::Create("Assets/Textures/NewStyle/Hole.psd");
-		m_FlagTexture = Ref<Texture>::Create("Assets/Textures/NewStyle/Hole_Flag.psd");
-		m_FlagStickTexture = Ref<Texture>::Create("Assets/Textures/NewStyle/Hole_Flag_Stick.psd");
+		m_Texture = Texture::Create("Assets/Textures/Hole.psd");
+		m_FlagTexture = Texture::Create("Assets/Textures/Hole_Flag.psd");
+		m_FlagStickTexture = Texture::Create("Assets/Textures/Hole_Flag_Stick.psd");
 	}
 
 	void Hole::OnUpdate(float time)

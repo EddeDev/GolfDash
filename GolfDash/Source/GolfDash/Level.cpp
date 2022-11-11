@@ -9,32 +9,32 @@ namespace gd {
 		m_Ball = Ball(this, specification.BallPosition);
 		m_Hole = Hole(this, specification.HolePosition);
 
-		m_LogoTexture = Ref<Texture>::Create("Assets/Textures/GUI/Logo_Text.psd");
-		m_HoleInOneTexture = Ref<Texture>::Create("Assets/Textures/GUI/HoleInOne_Text.psd");
+		m_LogoTexture = Texture::Create("Assets/Textures/Logo_Text.psd");
+		m_HoleInOneTexture = Texture::Create("Assets/Textures/HoleInOne_Text.psd");
 
 		m_FeedbackTextures[1] = {
-			Ref<Texture>::Create("Assets/Textures/GUI/Feedback_Amazing.psd"),
-			Ref<Texture>::Create("Assets/Textures/GUI/Feedback_Excellent.psd"),
-			Ref<Texture>::Create("Assets/Textures/GUI/Feedback_Super.psd")
+			Texture::Create("Assets/Textures/Feedback_Amazing.psd"),
+			Texture::Create("Assets/Textures/Feedback_Excellent.psd"),
+			Texture::Create("Assets/Textures/Feedback_Super.psd")
 		};
 
 		m_FeedbackTextures[2] = {
 
-			Ref<Texture>::Create("Assets/Textures/GUI/Feedback_Great.psd"),
-			Ref<Texture>::Create("Assets/Textures/GUI/Feedback_ThatsGreat.psd")
+			Texture::Create("Assets/Textures/Feedback_Great.psd"),
+			Texture::Create("Assets/Textures/Feedback_ThatsGreat.psd")
 		};
 
 		m_FeedbackTextures[3] = {
-			Ref<Texture>::Create("Assets/Textures/GUI/Feedback_KeepItUp.psd"),
-			Ref<Texture>::Create("Assets/Textures/GUI/Feedback_Fine.psd")
+			Texture::Create("Assets/Textures/Feedback_KeepItUp.psd"),
+			Texture::Create("Assets/Textures/Feedback_Fine.psd")
 		};
 
 		m_FeedbackTextures[4] = {
-			Ref<Texture>::Create("Assets/Textures/GUI/Feedback_KeepItUp.psd"),
+			Texture::Create("Assets/Textures/Feedback_KeepItUp.psd"),
 		};
 
-		std::string levelTexturePath = "Assets/Textures/GUI/Level" + std::to_string(specification.Index) + "_Text.psd";
-		m_LevelTexture = Ref<Texture>::Create(levelTexturePath);
+		std::string levelTexturePath = "Assets/Textures/Level" + std::to_string(specification.Index) + "_Text.psd";
+		m_LevelTexture = Texture::Create(levelTexturePath);
 	}
 
 	void Level::OnUpdate(float time, float deltaTime)

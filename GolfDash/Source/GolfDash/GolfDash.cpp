@@ -11,7 +11,7 @@ namespace gd {
 		windowConfig.Width = 1920;
 		windowConfig.Height = 1080;
 		windowConfig.Title = "Golf Dash";
-		windowConfig.Fullscreen = false;
+		windowConfig.Fullscreen = true;
 		windowConfig.VSync = true;
 
 		m_Window = Ref<Window>::Create(windowConfig);
@@ -69,10 +69,10 @@ namespace gd {
 		levelSpec.Index = 1;
 		levelSpec.BallPosition = { -1.0f, 0.0f };
 		levelSpec.HolePosition = { 1.0f, 0.0f };
-		levelSpec.BackgroundTexture = Ref<Texture>::Create("Assets/Textures/NewStyle/BG_Tiles_Default.psd");
+		levelSpec.BackgroundTexture = Texture::Create("Assets/Textures/BG_Tiles_Default.psd");
 
-		Ref<Texture> obstacle1Texture = Ref<Texture>::Create("Assets/Textures/NewStyle/Obstacle.psd");
-		Ref<Texture> obstacle2Texture = Ref<Texture>::Create("Assets/Textures/Obstacle_2.png");
+		Ref<Texture> obstacle1Texture = Texture::Create("Assets/Textures/Obstacle.psd");
+		Ref<Texture> obstacle2Texture = Texture::Create("Assets/Textures/Obstacle_Gray.psd");
 
 		Obstacle& obstacle1 = levelSpec.Obstacles.emplace_back();
 		obstacle1.Position = { 0.0f, -0.3f };
@@ -131,9 +131,9 @@ namespace gd {
 		levelSpec.Index = 2;
 		levelSpec.BallPosition = { -1.0f, -0.5f };
 		levelSpec.HolePosition = { 1.0f, -0.5f };
-		levelSpec.BackgroundTexture = Ref<Texture>::Create("Assets/Textures/NewStyle/BG_Tiles_Default.psd");
+		levelSpec.BackgroundTexture = Texture::Create("Assets/Textures/BG_Tiles_Default.psd");
 
-		Ref<Texture> obstacleTexture = Ref<Texture>::Create("Assets/Textures/NewStyle/Obstacle_Gray.psd");
+		Ref<Texture> obstacleTexture = Texture::Create("Assets/Textures/Obstacle_Gray.psd");
 
 		Obstacle& obstacle1 = levelSpec.Obstacles.emplace_back();
 		obstacle1.Position = { -0.5f, -0.5f };
