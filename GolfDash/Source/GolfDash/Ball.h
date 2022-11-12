@@ -13,13 +13,14 @@ namespace gd {
 		Ball(Ref<Level> level, const glm::vec2& position);
 
 		void OnUpdate(float time, float deltaTime);
+		void AddForce(const glm::vec2& force);
 
 		bool IsDragging() const { return m_IsDragging; }
 		uint32 GetStrokes() const { return m_Strokes; }
 
 		bool IsInHole() const { return m_IsInHole; }
 		bool IsReadyForNextLevel() const { return m_IsReadyForNextLevel; }
-		bool HasWon() const { return IsInHole() && IsReadyForNextLevel(); }
+		bool HasWon() const { return m_IsReadyForNextLevel; }
 		float GetTimeInHole() const { return m_TimeInHole; }
 	private:
 		Ref<Level> m_Level;

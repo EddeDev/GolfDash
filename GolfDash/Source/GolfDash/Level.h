@@ -17,6 +17,8 @@ namespace gd {
 		glm::vec2 BallPosition;
 		glm::vec2 HolePosition;
 
+		float GroundFriction = 0.5f;
+
 		std::vector<Obstacle> Obstacles;
 		std::vector<BoostPad> BoostPads;
 
@@ -31,7 +33,8 @@ namespace gd {
 
 		Level1,
 		Level2,
-		Level3
+		Level3,
+		Level4
 	};
 
 	// TODO: Level identifiers
@@ -56,6 +59,8 @@ namespace gd {
 
 		Camera& GetCamera() { return m_Camera; }
 		const Camera& GetCamera() const { return m_Camera; }
+
+		float GetGroundFriction() const { return m_GroundFriction; }
 
 		std::vector<Obstacle>& GetObstacles() { return m_Obstacles; }
 		const std::vector<Obstacle>& GetObstacles() const { return m_Obstacles; }
@@ -89,6 +94,8 @@ namespace gd {
 		Camera m_Camera;
 		Ball m_Ball;
 		Hole m_Hole;
+
+		float m_GroundFriction = 0.5f;
 
 		std::vector<Obstacle> m_Obstacles;
 		std::vector<BoostPad> m_BoostPads;

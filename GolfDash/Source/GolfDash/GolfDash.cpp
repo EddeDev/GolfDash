@@ -11,7 +11,7 @@ namespace gd {
 		windowConfig.Width = 1920;
 		windowConfig.Height = 1080;
 		windowConfig.Title = "Golf Dash";
-		windowConfig.Fullscreen = true;
+		windowConfig.Fullscreen = false;
 		windowConfig.VSync = true;
 
 		m_Window = Ref<Window>::Create(windowConfig);
@@ -26,9 +26,10 @@ namespace gd {
 
 		// Create level manager
 		m_LevelManager = Ref<LevelManager>::Create();
-		m_LevelManager->BindLevel(LevelType::Level1, CreateLevel1());
+		m_LevelManager->BindLevel(LevelType::Level1, CreateLevel1(), true);
 		m_LevelManager->BindLevel(LevelType::Level2, CreateLevel2());
-		m_LevelManager->BindLevel(LevelType::Level3, CreateLevel3(), true);
+		m_LevelManager->BindLevel(LevelType::Level3, CreateLevel3());
+		m_LevelManager->BindLevel(LevelType::Level4, CreateLevel4());
 
 		m_Window->AddFramebufferSizeCallback([this](uint32 width, uint32 height) { m_LevelManager->SetViewportSize(width, height); });
 		m_LevelManager->SetViewportSize(m_Window->GetFramebufferWidth(), m_Window->GetFramebufferHeight());
@@ -185,12 +186,75 @@ namespace gd {
 	{
 		LevelSpecification levelSpec;
 		levelSpec.Index = 3;
-		levelSpec.BallPosition = { -1.0f, 0.5f };
-		levelSpec.HolePosition = { 1.0f, 0.0f };
+		levelSpec.BallPosition = { -1.0f, -0.5f };
+		levelSpec.HolePosition = { 1.0f, -0.75f };
 		levelSpec.BackgroundTexture = Texture::Create("Assets/Textures/BG_Tiles_Default.psd");
 
-		BoostPad& boostPad = levelSpec.BoostPads.emplace_back();
-		boostPad.Rotation = -90.0f;
+		BoostPad& boostPad1 = levelSpec.BoostPads.emplace_back();
+		boostPad1.Position = { -1.5f, 0.5f };
+		boostPad1.Scale = { 0.5f, 0.5f };
+		boostPad1.Rotation = 90.0f;
+
+		BoostPad& boostPad2 = levelSpec.BoostPads.emplace_back();
+		boostPad2.Position = { 1.0f, 0.5f };
+		boostPad2.Scale = { 0.5f, 0.5f };
+		boostPad2.Rotation = 180.0f;
+		
+		Ref<Texture> obstacleTexture = Texture::Create("Assets/Textures/Obstacle_Gray.psd");
+
+		Obstacle& obstacle1 = levelSpec.Obstacles.emplace_back();
+		obstacle1.Position = { -1.0f, 0.0f };
+		obstacle1.Texture = obstacleTexture;
+		obstacle1.Scale.x = 0.5f;
+		obstacle1.Scale.y = 0.5f;
+
+		Obstacle& obstacle2 = levelSpec.Obstacles.emplace_back();
+		obstacle2.Position = { -0.5f, 0.0f };
+		obstacle2.Texture = obstacleTexture;
+		obstacle2.Scale.x = 0.5f;
+		obstacle2.Scale.y = 0.5f;
+
+		Obstacle& obstacle3 = levelSpec.Obstacles.emplace_back();
+		obstacle3.Position = { -0.5f, -0.5f };
+		obstacle3.Texture = obstacleTexture;
+		obstacle3.Scale.x = 0.5f;
+		obstacle3.Scale.y = 0.5f;
+
+		Obstacle& obstacle4 = levelSpec.Obstacles.emplace_back();
+		obstacle4.Position = { -0.5f, -1.0f };
+		obstacle4.Texture = obstacleTexture;
+		obstacle4.Scale.x = 0.5f;
+		obstacle4.Scale.y = 0.5f;
+
+		Obstacle& obstacle5 = levelSpec.Obstacles.emplace_back();
+		obstacle5.Position = { 0.0f, 0.0f };
+		obstacle5.Texture = obstacleTexture;
+		obstacle5.Scale.x = 0.5f;
+		obstacle5.Scale.y = 0.5f;
+
+		Obstacle& obstacle6 = levelSpec.Obstacles.emplace_back();
+		obstacle6.Position = { 0.0f, -0.5f };
+		obstacle6.Texture = obstacleTexture;
+		obstacle6.Scale.x = 0.5f;
+		obstacle6.Scale.y = 0.5f;
+
+		Obstacle& obstacle7 = levelSpec.Obstacles.emplace_back();
+		obstacle7.Position = { 0.0f, -1.0f };
+		obstacle7.Texture = obstacleTexture;
+		obstacle7.Scale.x = 0.5f;
+		obstacle7.Scale.y = 0.5f;
+
+		return Ref<Level>::Create(levelSpec);
+	}
+
+	Ref<Level> GolfDash::CreateLevel4() const
+	{
+		LevelSpecification levelSpec;
+		levelSpec.Index = 4;
+		levelSpec.BallPosition = { -1.0f, 0.5f };
+		levelSpec.HolePosition = { 1.0f, 0.0f };
+		levelSpec.BackgroundTexture = Texture::Create("Assets/Textures/BG_Tiles_Ice.psd");
+		levelSpec.GroundFriction = 0.5f * 0.5f; // slippery
 
 		return Ref<Level>::Create(levelSpec);
 	}

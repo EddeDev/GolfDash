@@ -119,7 +119,7 @@ namespace gd {
 
 		if (m_Velocity.x > epsilon || m_Velocity.x < -epsilon || m_Velocity.y > epsilon || m_Velocity.y < -epsilon)
 		{
-			const float friction = 0.5f;
+			float friction = m_Level->GetGroundFriction();
 
 			if (m_BallMagnitude > 0.0f)
 				m_BallMagnitude -= friction * deltaTime;
@@ -252,11 +252,10 @@ namespace gd {
 			bool intersects = boostPad.Intersects(m_Position, m_Scale);
 			if (intersects)
 			{
-				const float force = 2.5f;
+				AddForce(boostPad.GetDirection() * 0.1f);
 
-				// glm::vec2 direction = { glm::cos(boostPad.Rotation), glm::sin(boostPad.Rotation) };
-
-				// PRINT("Boost Direction: " << direction.x << ", " << direction.y);
+				printf("X: %lf\n", boostPad.GetDirection().x);
+				printf("Y: %lf\n", boostPad.GetDirection().y);
 			}
 		}
 
@@ -298,6 +297,21 @@ namespace gd {
 		// Draw shadow
 		glm::vec2 shadowOffset = { GD_SHADOW_OFFSET_X, GD_SHADOW_OFFSET_Y };
 		m_Level->GetRenderer()->RenderQuad({ m_Position + shadowOffset, -0.11f }, m_Scale, { 0.0f, 0.0f, 0.0f, GD_SHADOW_ALPHA }, m_Texture);
+	}
+
+	void Ball::AddForce(const glm::vec2& force)
+	{
+		const float epsilon = 0.0001f;
+	
+		m_Velocity += force;
+		m_InitialVelocity = m_Velocity;
+
+		m_Direction.x = m_Velocity.x / glm::abs(m_Velocity.x);
+		m_Direction.y = m_Velocity.y / glm::abs(m_Velocity.y);
+
+		m_InitialBallMagnitude = glm::length(m_Velocity);
+		m_InitialBallMagnitude = glm::min(m_InitialBallMagnitude, 1.0f);
+		m_BallMagnitude = m_InitialBallMagnitude;
 	}
 
 }

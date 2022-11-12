@@ -11,6 +11,21 @@ namespace gd {
 
 		float Rotation = 0.0f;
 
+		glm::vec2 GetDirection() const
+		{
+			
+			glm::vec2 result = { glm::sin(glm::radians(Rotation)), glm::cos(glm::radians(Rotation)) };
+
+			// TODO: temp fix
+			const float epsilon = 0.0001f;
+			if (result.x > -epsilon && std::signbit(result.x))
+				result.x = 0.0f;
+			if (result.y > -epsilon && std::signbit(result.y))
+				result.y = 0.0f;
+
+			return result;
+		}
+
 		bool Intersects(const glm::vec2& position, const glm::vec2& scale) const
 		{
 			glm::vec2 halfScale = scale * 0.5f;

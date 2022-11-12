@@ -4,7 +4,7 @@
 namespace gd {
 
 	Level::Level(const LevelSpecification& specification)
-		: m_Obstacles(specification.Obstacles), m_BoostPads(specification.BoostPads), m_BackgroundTexture(specification.BackgroundTexture)
+		: m_Obstacles(specification.Obstacles), m_BoostPads(specification.BoostPads), m_BackgroundTexture(specification.BackgroundTexture), m_GroundFriction(specification.GroundFriction)
 	{
 		m_Ball = Ball(this, specification.BallPosition);
 		m_Hole = Hole(this, specification.HolePosition);
@@ -51,15 +51,15 @@ namespace gd {
 		m_Ball.OnUpdate(time, deltaTime);
 		m_Hole.OnUpdate(time);
 
+		float t = glm::clamp(m_Ball.GetTimeInHole() * 3.0f, 0.0f, 1.0f);
+
+		if (m_Ball.IsReadyForNextLevel())
+			m_Renderer->SetCompositeWave(0.0f);
+		else
+			m_Renderer->SetCompositeWave(t * 0.005f);
+
 		if (m_Ball.IsInHole())
 		{
-			float t = glm::clamp(m_Ball.GetTimeInHole() * 3.0f, 0.0f, 1.0f);
-
-			if (m_Ball.IsReadyForNextLevel())
-				m_Renderer->SetCompositeWave(0.0f);
-			else
-				m_Renderer->SetCompositeWave(t * 0.005f);
-
 			if (m_Ball.GetStrokes() == 1)
 			{
 				glm::vec2 scale = glm::normalize(glm::vec2((float)m_HoleInOneTexture->GetWidth(), (float)m_HoleInOneTexture->GetHeight()));
@@ -211,6 +211,10 @@ namespace gd {
 				level->Clear();
 
 				SetActiveLevelType(nextLevelType);
+			}
+			else
+			{
+				std::cerr << "Next level is null!" << std::endl;
 			}
 		}
 	}

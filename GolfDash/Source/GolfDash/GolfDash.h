@@ -23,6 +23,7 @@ namespace gd {
 		Ref<Level> CreateLevel1() const;
 		Ref<Level> CreateLevel2() const;
 		Ref<Level> CreateLevel3() const;
+		Ref<Level> CreateLevel4() const;
 	private:
 		static GolfDash* s_Instance;
 

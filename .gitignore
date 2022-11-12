@@ -9,6 +9,7 @@ Obj/
 **.vcxproj.filters
 **.vcxproj.user
 **.user
+JSON
 
 # LFS Folders
 lfs/
