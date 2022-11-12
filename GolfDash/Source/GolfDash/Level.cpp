@@ -1,6 +1,8 @@
 #include "GolfDashPCH.h"
 #include "Level.h"
 
+#include "GolfDash.h"
+
 namespace gd {
 
 	Level::Level(const LevelSpecification& specification)
@@ -47,7 +49,7 @@ namespace gd {
 		RenderLevelText();
 		RenderLogo();
 		RenderBoostPads();
-		RenderObstacles();
+		UpdateAndRenderObstacles(time, deltaTime);
 		m_Ball.OnUpdate(time, deltaTime);
 		m_Hole.OnUpdate(time);
 
@@ -159,10 +161,17 @@ namespace gd {
 		m_Renderer->RenderQuad(glm::vec3(logoPosition + shadowOffset, -0.16f), logoScale, glm::vec4(0.0f, 0.0f, 0.0f, GD_SHADOW_ALPHA), m_LogoTexture);
 	}
 
-	void Level::RenderObstacles()
+	void Level::UpdateAndRenderObstacles(float time, float deltaTime)
 	{
 		for (auto& obstacle : m_Obstacles)
 		{
+			ObstacleUpdateFunctionData fnData;
+			fnData.Instance = &obstacle;
+			fnData.Time = time;
+			fnData.DeltaTime = deltaTime;
+
+			obstacle.Update(fnData);
+
 			m_Renderer->RenderQuad(glm::vec3(obstacle.Position, -0.1f), obstacle.Scale, obstacle.Color, obstacle.Texture);
 
 			// render shadow
@@ -214,7 +223,10 @@ namespace gd {
 			}
 			else
 			{
-				std::cerr << "Next level is null!" << std::endl;
+				// std::cerr << "Next level is null!" << std::endl;
+			
+				// TEMP
+				GolfDash::Get().Close();
 			}
 		}
 	}

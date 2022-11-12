@@ -71,7 +71,7 @@ namespace gd {
 		void RenderBackground();
 		void RenderLevelText();
 		void RenderLogo();
-		void RenderObstacles();
+		void UpdateAndRenderObstacles(float time, float deltaTime);
 		void RenderBoostPads();
 
 		void Clear();

@@ -11,7 +11,7 @@ namespace gd {
 		windowConfig.Width = 1920;
 		windowConfig.Height = 1080;
 		windowConfig.Title = "Golf Dash";
-		windowConfig.Fullscreen = false;
+		windowConfig.Fullscreen = true;
 		windowConfig.VSync = true;
 
 		m_Window = Ref<Window>::Create(windowConfig);
@@ -19,17 +19,17 @@ namespace gd {
 		m_Window->SetCursor("Assets/Cursors/Cursor.png");
 		m_Window->AddCloseCallback([this]()
 		{
-			m_Running = false;
+			Close();
 		});
 
 		m_Mouse = Ref<Mouse>::Create(m_Window);
 
 		// Create level manager
 		m_LevelManager = Ref<LevelManager>::Create();
-		m_LevelManager->BindLevel(LevelType::Level1, CreateLevel1(), true);
+		m_LevelManager->BindLevel(LevelType::Level1, CreateLevel1());
 		m_LevelManager->BindLevel(LevelType::Level2, CreateLevel2());
 		m_LevelManager->BindLevel(LevelType::Level3, CreateLevel3());
-		m_LevelManager->BindLevel(LevelType::Level4, CreateLevel4());
+		m_LevelManager->BindLevel(LevelType::Level4, CreateLevel4(), true);
 
 		m_Window->AddFramebufferSizeCallback([this](uint32 width, uint32 height) { m_LevelManager->SetViewportSize(width, height); });
 		m_LevelManager->SetViewportSize(m_Window->GetFramebufferWidth(), m_Window->GetFramebufferHeight());
@@ -63,6 +63,11 @@ namespace gd {
 			m_LevelManager->OnUpdate(time, deltaTime);
 			m_Window->SwapBuffers();
 		}
+	}
+
+	void GolfDash::Close()
+	{
+		m_Running = false;
 	}
 
 	Ref<Level> GolfDash::CreateLevel1() const
@@ -251,10 +256,43 @@ namespace gd {
 	{
 		LevelSpecification levelSpec;
 		levelSpec.Index = 4;
-		levelSpec.BallPosition = { -1.0f, 0.5f };
-		levelSpec.HolePosition = { 1.0f, 0.0f };
+		levelSpec.BallPosition = { -1.25f, 0.0f };
+		levelSpec.HolePosition = { 1.25f, 0.0f };
 		levelSpec.BackgroundTexture = Texture::Create("Assets/Textures/BG_Tiles_Ice.psd");
-		levelSpec.GroundFriction = 0.5f * 0.5f; // slippery
+		levelSpec.GroundFriction = 0.5f * 0.5f; // slipperiness
+
+		Obstacle& obstacle1 = levelSpec.Obstacles.emplace_back();
+		obstacle1.Position = { -0.5f, 0.0f };
+		obstacle1.Texture = Texture::Create("Assets/Textures/Obstacle_LightBlue.psd");
+		obstacle1.Scale.x = 0.5f;
+		obstacle1.Scale.y = 0.5f;
+		obstacle1.UpdateFunction = [](ObstacleUpdateFunctionData& data)
+		{
+			Obstacle& obstacle = *data.Instance;
+			obstacle.Position.y = glm::sin(data.Time * 2.0f) * 0.5f;
+		};
+
+		Obstacle& obstacle2 = levelSpec.Obstacles.emplace_back();
+		obstacle2.Position = { 0.0f, 0.0f };
+		obstacle2.Texture = Texture::Create("Assets/Textures/Obstacle_LightBlue.psd");
+		obstacle2.Scale.x = 0.5f;
+		obstacle2.Scale.y = 0.5f;
+		obstacle2.UpdateFunction = [](ObstacleUpdateFunctionData& data)
+		{
+			Obstacle& obstacle = *data.Instance;
+			obstacle.Position.y = -glm::cos(data.Time * 2.0f) * 0.5f;
+		};
+
+		Obstacle& obstacle3 = levelSpec.Obstacles.emplace_back();
+		obstacle3.Position = { 0.5f, 0.0f };
+		obstacle3.Texture = Texture::Create("Assets/Textures/Obstacle_LightBlue.psd");
+		obstacle3.Scale.x = 0.5f;
+		obstacle3.Scale.y = 0.5f;
+		obstacle3.UpdateFunction = [](ObstacleUpdateFunctionData& data)
+		{
+			Obstacle& obstacle = *data.Instance;
+			obstacle.Position.y = glm::sin(data.Time * 2.0f) * 0.5f;
+		};
 
 		return Ref<Level>::Create(levelSpec);
 	}

@@ -14,6 +14,19 @@ namespace gd {
 		Bottom
 	};
 
+	// Forward-declaration
+	struct Obstacle;
+
+	struct ObstacleUpdateFunctionData
+	{
+		Obstacle* Instance;
+
+		float Time;
+		float DeltaTime;
+	};
+
+	using ObstacleUpdateFunction = std::function<void(ObstacleUpdateFunctionData&)>;
+
 	struct Obstacle
 	{
 		glm::vec2 Position = glm::vec2(0.0f);
@@ -21,6 +34,21 @@ namespace gd {
 
 		glm::vec4 Color = glm::vec4(1.0f);
 		Ref<Texture> Texture;
+
+		// Read-only
+		glm::vec2 PositionDelta = glm::vec2(0.0f);
+		
+		ObstacleUpdateFunction UpdateFunction;
+
+		void Update(ObstacleUpdateFunctionData& data)
+		{
+			if (UpdateFunction)
+			{
+				glm::vec2 lastPosition = Position;
+				UpdateFunction(data);
+				PositionDelta = Position - lastPosition;
+			}
+		}
 
 		bool Intersects(const glm::vec2& position, const glm::vec2& scale) const
 		{

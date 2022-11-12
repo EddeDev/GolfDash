@@ -163,6 +163,11 @@ namespace gd {
 			m_Direction.y = 1.0f;
 		}
 
+		// Clamp position
+		glm::vec2 boundsMin = glm::vec2(-m_Level->GetCamera().GetAspectRatio() + (m_Scale.x * 0.5f), -1.0f + (m_Scale.x * 0.5f));
+		glm::vec2 boundsMax = glm::vec2(m_Level->GetCamera().GetAspectRatio() - (m_Scale.x * 0.5f), 1.0f - (m_Scale.x * 0.5f));
+		m_Position = glm::clamp(m_Position, boundsMin, boundsMax);
+
 		const auto& obstacles = m_Level->GetObstacles();
 		for (const auto& obstacle : obstacles)
 		{
@@ -175,6 +180,8 @@ namespace gd {
 			{
 				Side nearestSide = obstacle.GetNearestSide(m_Position);
 
+				bool anySideHit = false;
+
 				if (m_Direction.x == 1.0f)
 				{
 					if (m_Direction.y == 1.0f)
@@ -183,12 +190,13 @@ namespace gd {
 						{
 							m_Velocity = { m_Velocity.x, -m_Velocity.y };
 							m_Direction.y = -1.0f;
+							anySideHit = true;
 						}
-						
-						if (nearestSide == Side::Left)
+						else if (nearestSide == Side::Left)
 						{
 							m_Velocity = { -m_Velocity.x, m_Velocity.y };
 							m_Direction.x = -1.0f;
+							anySideHit = true;
 						}
 					}
 					else if (m_Direction.y == -1.0f)
@@ -197,12 +205,13 @@ namespace gd {
 						{
 							m_Velocity = { m_Velocity.x, -m_Velocity.y };
 							m_Direction.y = 1.0f;
+							anySideHit = true;
 						}
-						
-						if (nearestSide == Side::Left)
+						else if (nearestSide == Side::Left)
 						{
 							m_Velocity = { -m_Velocity.x, m_Velocity.y };
 							m_Direction.x = -1.0f;
+							anySideHit = true;
 						}
 					}
 				}
@@ -214,12 +223,13 @@ namespace gd {
 						{
 							m_Velocity = { m_Velocity.x, -m_Velocity.y };
 							m_Direction.y = -1.0f;
+							anySideHit = true;
 						}
-						
-						if (nearestSide == Side::Right)
+						else if (nearestSide == Side::Right)
 						{
 							m_Velocity = { -m_Velocity.x, m_Velocity.y };
 							m_Direction.x = 1.0f;
+							anySideHit = true;
 						}
 					}
 					else if (m_Direction.y == -1.0f)
@@ -228,17 +238,52 @@ namespace gd {
 						{
 							m_Velocity = { m_Velocity.x, -m_Velocity.y };
 							m_Direction.y = 1.0f;
+							anySideHit = true;
 						}
-						
-						if (nearestSide == Side::Right)
+						else if (nearestSide == Side::Right)
 						{
 							m_Velocity = { -m_Velocity.x, m_Velocity.y };
 							m_Direction.x = 1.0f;
+							anySideHit = true;
 						}
 					}
 				}
 			
-				// m_InitialVelocity = m_Velocity;
+				if (!anySideHit)
+				{
+					auto forceFormula = [](float posDelta)
+					{
+						return posDelta * 10.0f;
+					};
+					
+					switch (nearestSide)
+					{
+					case Side::Left:
+					{
+						if (obstacle.PositionDelta.x < 0.0f)
+							AddForce({ forceFormula(obstacle.PositionDelta.x), 0.0f});
+						break;
+					}
+					case Side::Right:
+					{
+						if (obstacle.PositionDelta.x > 0.0f)
+							AddForce({ forceFormula(obstacle.PositionDelta.x), 0.0f });
+						break;
+					}
+					case Side::Top:
+					{
+						if (obstacle.PositionDelta.y > 0.0f)
+							AddForce({ 0.0f, forceFormula(obstacle.PositionDelta.y) });
+						break;
+					}
+					case Side::Bottom:
+					{
+						if (obstacle.PositionDelta.y < 0.0f)
+							AddForce({ 0.0f, forceFormula(obstacle.PositionDelta.y) });
+						break;
+					}
+					}
+				}
 			}
 		}
 
@@ -301,8 +346,6 @@ namespace gd {
 
 	void Ball::AddForce(const glm::vec2& force)
 	{
-		const float epsilon = 0.0001f;
-	
 		m_Velocity += force;
 		m_InitialVelocity = m_Velocity;
 

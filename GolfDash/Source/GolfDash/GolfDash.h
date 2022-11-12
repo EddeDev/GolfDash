@@ -13,6 +13,7 @@ namespace gd {
 		GolfDash();
 
 		void Run();
+		void Close();
 
 		Ref<Window> GetWindow() const { return m_Window; }
 		Ref<Mouse> GetMouse() const { return m_Mouse; }
