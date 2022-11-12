@@ -13,7 +13,6 @@ namespace gd {
 
 		glm::vec2 GetDirection() const
 		{
-			
 			glm::vec2 result = { glm::sin(glm::radians(Rotation)), glm::cos(glm::radians(Rotation)) };
 
 			// TODO: temp fix

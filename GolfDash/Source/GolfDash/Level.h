@@ -34,7 +34,8 @@ namespace gd {
 		Level1,
 		Level2,
 		Level3,
-		Level4
+		Level4,
+		Level5
 	};
 
 	// TODO: Level identifiers

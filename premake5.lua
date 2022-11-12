@@ -21,6 +21,11 @@ project "GolfDash"
     {
         "%{prj.name}/Source/**.h",
         "%{prj.name}/Source/**.cpp",
+
+        "%{prj.name}/Assets/**.glsl",
+        "%{prj.name}/Assets/**.png",
+        "%{prj.name}/Assets/**.psd",
+
         "%{prj.name}/Libraries/glm/glm/**.hpp",
         "%{prj.name}/Libraries/glm/glm/**.inl",
         "%{prj.name}/Libraries/stb_image/stb_image.h"

@@ -93,17 +93,25 @@ namespace gd {
 					m_InitialVelocity *= distance + 1.0f;
 					m_InitialVelocity *= glm::pow(1.3f, 2.0f);
 
-					// TODO: temp fix
 					if (m_InitialVelocity.x == 0.0f)
 						m_InitialVelocity.x += epsilon;
 					if (m_InitialVelocity.y == 0.0f)
 						m_InitialVelocity.y += epsilon;
 
-					// PRINT("Initial velocity: " << m_InitialVelocity.x << ", " << m_InitialVelocity.y);
+					if (glm::isnan(m_InitialVelocity.x))
+						m_InitialVelocity.x = 0.0f;
+					if (glm::isnan(m_InitialVelocity.y))
+						m_InitialVelocity.y = 0.0f;
+
 					m_Velocity = m_InitialVelocity;
 
 					m_Direction.x = m_Velocity.x / glm::abs(m_Velocity.x);
+					if (glm::isnan(m_Direction.x))
+						m_Direction.x = 0.0f;
+
 					m_Direction.y = m_Velocity.y / glm::abs(m_Velocity.y);
+					if (glm::isnan(m_Direction.y))
+						m_Direction.y = 0.0f;
 
 					m_InitialBallMagnitude = glm::length(m_Velocity);
 					m_InitialBallMagnitude = glm::min(m_InitialBallMagnitude, 1.0f);
@@ -116,6 +124,11 @@ namespace gd {
 		}
 
 		m_Position += m_Velocity * deltaTime;
+
+		// Clamp position
+		glm::vec2 boundsMin = glm::vec2(-m_Level->GetCamera().GetAspectRatio() + (m_Scale.x * 0.5f), -1.0f + (m_Scale.x * 0.5f));
+		glm::vec2 boundsMax = glm::vec2(m_Level->GetCamera().GetAspectRatio() - (m_Scale.x * 0.5f), 1.0f - (m_Scale.x * 0.5f));
+		m_Position = glm::clamp(m_Position, boundsMin, boundsMax);
 
 		if (m_Velocity.x > epsilon || m_Velocity.x < -epsilon || m_Velocity.y > epsilon || m_Velocity.y < -epsilon)
 		{
@@ -162,11 +175,6 @@ namespace gd {
 			m_Velocity = { m_Velocity.x, -m_Velocity.y };
 			m_Direction.y = 1.0f;
 		}
-
-		// Clamp position
-		glm::vec2 boundsMin = glm::vec2(-m_Level->GetCamera().GetAspectRatio() + (m_Scale.x * 0.5f), -1.0f + (m_Scale.x * 0.5f));
-		glm::vec2 boundsMax = glm::vec2(m_Level->GetCamera().GetAspectRatio() - (m_Scale.x * 0.5f), 1.0f - (m_Scale.x * 0.5f));
-		m_Position = glm::clamp(m_Position, boundsMin, boundsMax);
 
 		const auto& obstacles = m_Level->GetObstacles();
 		for (const auto& obstacle : obstacles)
@@ -296,12 +304,7 @@ namespace gd {
 
 			bool intersects = boostPad.Intersects(m_Position, m_Scale);
 			if (intersects)
-			{
 				AddForce(boostPad.GetDirection() * 0.1f);
-
-				printf("X: %lf\n", boostPad.GetDirection().x);
-				printf("Y: %lf\n", boostPad.GetDirection().y);
-			}
 		}
 
 		if (m_BallMagnitude < 1.0f)
@@ -346,11 +349,23 @@ namespace gd {
 
 	void Ball::AddForce(const glm::vec2& force)
 	{
-		m_Velocity += force;
+		m_Velocity.x += force.x;
+		if (glm::isnan(m_Velocity.x))
+			m_Velocity.x = 0.0f;
+
+		m_Velocity.y += force.y;
+		if (glm::isnan(m_Velocity.y))
+			m_Velocity.y = 0.0f;
+
 		m_InitialVelocity = m_Velocity;
 
 		m_Direction.x = m_Velocity.x / glm::abs(m_Velocity.x);
+		if (glm::isnan(m_Direction.x))
+			m_Direction.x = 0.0f;
+		
 		m_Direction.y = m_Velocity.y / glm::abs(m_Velocity.y);
+		if (glm::isnan(m_Direction.y))
+			m_Direction.y = 0.0f;
 
 		m_InitialBallMagnitude = glm::length(m_Velocity);
 		m_InitialBallMagnitude = glm::min(m_InitialBallMagnitude, 1.0f);
