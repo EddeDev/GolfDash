@@ -2,6 +2,7 @@
 #include "Ball.h"
 
 #include "GolfDash.h"
+#include "ResourceManager.h"
 #include "Level.h"
 
 namespace gd {
@@ -23,7 +24,7 @@ namespace gd {
 	Ball::Ball(Ref<Level> level, const glm::vec2& position)
 		: m_Level(level), m_Position(position)
 	{
-		m_Texture = Texture::Create("Assets/Textures/Ball.psd");
+		m_Texture = ResourceManager::GetTexture("Ball");
 	
 		m_InitialScale = glm::vec2(0.1f);
 		m_Scale = m_InitialScale;

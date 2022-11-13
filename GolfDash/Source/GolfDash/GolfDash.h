@@ -11,6 +11,7 @@ namespace gd {
 	{
 	public:
 		GolfDash();
+		~GolfDash();
 
 		void Run();
 		void Close();

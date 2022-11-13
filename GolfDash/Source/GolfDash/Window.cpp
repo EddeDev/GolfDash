@@ -109,10 +109,13 @@ namespace gd {
 		}
 	}
 
-	void Window::SetCursor(const std::string& filepath) const
+	void Window::SetCursor(Ref<Texture> texture) const
 	{
 		GLFWimage image = {};
-		image.pixels = stbi_load(filepath.c_str(), &image.width, &image.height, nullptr, STBI_rgb_alpha);
+		image.width = texture->GetInfo().Width;
+		image.height = texture->GetInfo().Height;
+		image.pixels = texture->GetInfo().Data;
+
 		GLFWcursor* cursor = glfwCreateCursor(&image, 0, 0);
 		glfwSetCursor(m_Window, cursor);
 	}

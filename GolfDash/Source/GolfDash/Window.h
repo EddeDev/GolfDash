@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Texture.h"
+
 struct GLFWwindow;
 
 namespace gd {
@@ -36,7 +38,7 @@ namespace gd {
 		void SetTitle(const std::string& title);
 		void SetVSync(bool enabled);
 
-		void SetCursor(const std::string& filepath) const;
+		void SetCursor(Ref<Texture> texture) const;
 		void SetCursorVisible(bool visible) const;
 
 		float GetTime() const;

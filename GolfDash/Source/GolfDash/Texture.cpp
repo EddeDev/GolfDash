@@ -8,25 +8,42 @@
 
 namespace gd {
 
-	Texture::Texture(const std::string& filepath)
+	Texture::Texture(const TextureInfo& info)
 	{
-		stbi_set_flip_vertically_on_load(true);
-		
-		int32 width, height, channels;
-		uint8* data = stbi_load(filepath.c_str(), &width, &height, &channels, STBI_default);
-		if (!data)
-		{
-			std::cerr << "Could not load texture '" << filepath << "'" << std::endl;
-			std::cerr << stbi_failure_reason() << std::endl;
-			return;
-		}
+		m_Info.Filepath = info.Filepath;
+		m_Info.Width = info.Width;
+		m_Info.Height = info.Height;
+		m_Info.Channels = info.Channels;
 
-		m_Width = width;
-		m_Height = height;
+		if (info.Data)
+		{
+			size_t dataSize = info.Width * info.Height * info.Channels;
+
+			m_Info.Data = new uint8[dataSize];
+			memcpy(m_Info.Data, info.Data, dataSize);
+		}
+		else
+		{
+			uint8* data = stbi_load(m_Info.Filepath.c_str(), &m_Info.Width, &m_Info.Height, &m_Info.Channels, STBI_default);
+		
+			if (data)
+			{
+				size_t dataSize = m_Info.Width * m_Info.Height * m_Info.Channels;
+				
+				m_Info.Data = new uint8[dataSize];
+				memcpy(m_Info.Data, data, dataSize);
+			}
+			else
+			{
+				std::cerr << "Could not load texture '" << m_Info.Filepath << "'" << std::endl;
+				std::cerr << stbi_failure_reason() << std::endl;
+				return;
+			}
+		}
 
 		uint32 format = 0;
 		uint32 internalFormat = 0;
-		if (channels == STBI_rgb)
+		if (m_Info.Channels == 3)
 		{
 			format = GL_RGB;
 			internalFormat = GL_RGB8;
@@ -38,27 +55,9 @@ namespace gd {
 		}
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_TextureID);
-		glTextureStorage2D(m_TextureID, 1, internalFormat, width, height);
+		glTextureStorage2D(m_TextureID, 1, internalFormat, m_Info.Width, m_Info.Height);
 
-		glTextureSubImage2D(m_TextureID, 0, 0, 0, width, height, format, GL_UNSIGNED_BYTE, static_cast<const void*>(data));
-		// glGenerateTextureMipmap(m_TextureID);
-
-		glTextureParameteri(m_TextureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTextureParameteri(m_TextureID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		
-		stbi_image_free(data);
-	}
-
-	Texture::Texture(uint32 width, uint32 height, const void* data)
-		: m_Width(width), m_Height(height)
-	{
-		glCreateTextures(GL_TEXTURE_2D, 1, &m_TextureID);
-		glTextureStorage2D(m_TextureID, 1, GL_RGBA8, width, height);
-
-		glTextureSubImage2D(m_TextureID, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glTextureSubImage2D(m_TextureID, 0, 0, 0, m_Info.Width, m_Info.Height, format, GL_UNSIGNED_BYTE, static_cast<const void*>(m_Info.Data));
 		// glGenerateTextureMipmap(m_TextureID);
 
 		glTextureParameteri(m_TextureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -70,6 +69,8 @@ namespace gd {
 
 	Texture::~Texture()
 	{
+		delete[] m_Info.Data;
+
 		glDeleteTextures(1, &m_TextureID);
 	}
 
@@ -82,17 +83,5 @@ namespace gd {
 	{
 		glBindTextureUnit(slot, 0);
 	}
-
-	Ref<Texture> Texture::Create(const std::string& filepath)
-	{
-		if (s_TextureMap.find(filepath) != s_TextureMap.end())
-			return s_TextureMap.at(filepath);
-
-		Ref<Texture> texture = Ref<Texture>::Create(filepath);
-		s_TextureMap[filepath] = texture;
-		return texture;
-	}
-
-	std::unordered_map<std::string, Ref<Texture>> Texture::s_TextureMap;
 
 }

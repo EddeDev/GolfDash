@@ -1,6 +1,7 @@
 #include "GolfDashPCH.h"
 #include "Hole.h"
 
+#include "ResourceManager.h"
 #include "Level.h"
 
 namespace gd {
@@ -8,9 +9,9 @@ namespace gd {
 	Hole::Hole(Ref<Level> level, const glm::vec2& position)
 		: m_Level(level), m_Position(position)
 	{
-		m_Texture = Texture::Create("Assets/Textures/Hole.psd");
-		m_FlagTexture = Texture::Create("Assets/Textures/Hole_Flag.psd");
-		m_FlagStickTexture = Texture::Create("Assets/Textures/Hole_Flag_Stick.psd");
+		m_Texture = ResourceManager::GetTexture("Hole");
+		m_FlagTexture = ResourceManager::GetTexture("Hole_Flag");
+		m_FlagStickTexture = ResourceManager::GetTexture("Hole_Flag_Stick");
 	}
 
 	void Hole::OnUpdate(float time)

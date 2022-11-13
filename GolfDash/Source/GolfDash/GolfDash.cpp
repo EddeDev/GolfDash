@@ -1,6 +1,8 @@
 #include "GolfDashPCH.h"
 #include "GolfDash.h"
 
+#include "ResourceManager.h"
+
 namespace gd {
 
 	GolfDash::GolfDash()
@@ -11,12 +13,15 @@ namespace gd {
 		windowConfig.Width = 1920;
 		windowConfig.Height = 1080;
 		windowConfig.Title = "Golf Dash";
-		windowConfig.Fullscreen = true;
+		windowConfig.Fullscreen = false;
 		windowConfig.VSync = true;
 
 		m_Window = Ref<Window>::Create(windowConfig);
 		m_Window->CreateContext();
-		m_Window->SetCursor("Assets/Cursors/Cursor.png");
+
+		ResourceManager::Init();
+
+		m_Window->SetCursor(ResourceManager::GetTexture("Cursor"));
 		m_Window->AddCloseCallback([this]()
 		{
 			Close();
@@ -34,6 +39,11 @@ namespace gd {
 
 		m_Window->AddFramebufferSizeCallback([this](uint32 width, uint32 height) { m_LevelManager->SetViewportSize(width, height); });
 		m_LevelManager->SetViewportSize(m_Window->GetFramebufferWidth(), m_Window->GetFramebufferHeight());
+	}
+
+	GolfDash::~GolfDash()
+	{
+		ResourceManager::Shutdown();
 	}
 
 	void GolfDash::Run()
@@ -77,10 +87,11 @@ namespace gd {
 		levelSpec.Index = 1;
 		levelSpec.BallPosition = { -1.0f, 0.0f };
 		levelSpec.HolePosition = { 1.0f, 0.0f };
-		levelSpec.BackgroundTexture = Texture::Create("Assets/Textures/BG_Tiles_Default.psd");
+		
+		levelSpec.BackgroundTexture = ResourceManager::GetTexture("BG_Tiles_Default");
 
-		Ref<Texture> obstacle1Texture = Texture::Create("Assets/Textures/Obstacle.psd");
-		Ref<Texture> obstacle2Texture = Texture::Create("Assets/Textures/Obstacle_Gray.psd");
+		Ref<Texture> obstacle1Texture = ResourceManager::GetTexture("Obstacle");
+		Ref<Texture> obstacle2Texture = ResourceManager::GetTexture("Obstacle_Gray");
 
 		Obstacle& obstacle1 = levelSpec.Obstacles.emplace_back();
 		obstacle1.Position = { 0.0f, -0.3f };
@@ -139,9 +150,9 @@ namespace gd {
 		levelSpec.Index = 2;
 		levelSpec.BallPosition = { -1.0f, -0.5f };
 		levelSpec.HolePosition = { 1.0f, -0.5f };
-		levelSpec.BackgroundTexture = Texture::Create("Assets/Textures/BG_Tiles_Default.psd");
+		levelSpec.BackgroundTexture = ResourceManager::GetTexture("BG_Tiles_Default");
 
-		Ref<Texture> obstacleTexture = Texture::Create("Assets/Textures/Obstacle_Gray.psd");
+		Ref<Texture> obstacleTexture = ResourceManager::GetTexture("Obstacle_Gray");
 
 		Obstacle& obstacle1 = levelSpec.Obstacles.emplace_back();
 		obstacle1.Position = { -0.5f, -0.5f };
@@ -194,7 +205,7 @@ namespace gd {
 		levelSpec.Index = 3;
 		levelSpec.BallPosition = { -1.0f, -0.5f };
 		levelSpec.HolePosition = { 1.0f, -0.75f };
-		levelSpec.BackgroundTexture = Texture::Create("Assets/Textures/BG_Tiles_Default.psd");
+		levelSpec.BackgroundTexture = ResourceManager::GetTexture("Assets/Textures/BG_Tiles_Default");
 
 		BoostPad& boostPad1 = levelSpec.BoostPads.emplace_back();
 		boostPad1.Position = { -1.5f, 0.5f };
@@ -206,7 +217,7 @@ namespace gd {
 		boostPad2.Scale = { 0.5f, 0.5f };
 		boostPad2.Rotation = 180.0f;
 		
-		Ref<Texture> obstacleTexture = Texture::Create("Assets/Textures/Obstacle_Gray.psd");
+		Ref<Texture> obstacleTexture = ResourceManager::GetTexture("Assets/Textures/Obstacle_Gray");
 
 		Obstacle& obstacle1 = levelSpec.Obstacles.emplace_back();
 		obstacle1.Position = { -1.0f, 0.0f };
@@ -259,12 +270,12 @@ namespace gd {
 		levelSpec.Index = 4;
 		levelSpec.BallPosition = { -1.25f, 0.0f };
 		levelSpec.HolePosition = { 1.25f, 0.0f };
-		levelSpec.BackgroundTexture = Texture::Create("Assets/Textures/BG_Tiles_Ice.psd");
+		levelSpec.BackgroundTexture = ResourceManager::GetTexture("BG_Tiles_Ice");
 		levelSpec.GroundFriction = 0.5f * 0.5f; // slipperiness
 
 		Obstacle& obstacle1 = levelSpec.Obstacles.emplace_back();
 		obstacle1.Position = { -0.5f, 0.0f };
-		obstacle1.Texture = Texture::Create("Assets/Textures/Obstacle_LightBlue.psd");
+		obstacle1.Texture = ResourceManager::GetTexture("Obstacle_LightBlue");
 		obstacle1.Scale.x = 0.5f;
 		obstacle1.Scale.y = 0.5f;
 		obstacle1.UpdateFunction = [](ObstacleUpdateFunctionData& data)
@@ -275,7 +286,7 @@ namespace gd {
 
 		Obstacle& obstacle2 = levelSpec.Obstacles.emplace_back();
 		obstacle2.Position = { 0.0f, 0.0f };
-		obstacle2.Texture = Texture::Create("Assets/Textures/Obstacle_LightBlue.psd");
+		obstacle2.Texture = ResourceManager::GetTexture("Obstacle_LightBlue");
 		obstacle2.Scale.x = 0.5f;
 		obstacle2.Scale.y = 0.5f;
 		obstacle2.UpdateFunction = [](ObstacleUpdateFunctionData& data)
@@ -286,7 +297,7 @@ namespace gd {
 
 		Obstacle& obstacle3 = levelSpec.Obstacles.emplace_back();
 		obstacle3.Position = { 0.5f, 0.0f };
-		obstacle3.Texture = Texture::Create("Assets/Textures/Obstacle_LightBlue.psd");
+		obstacle3.Texture = ResourceManager::GetTexture("Obstacle_LightBlue");
 		obstacle3.Scale.x = 0.5f;
 		obstacle3.Scale.y = 0.5f;
 		obstacle3.UpdateFunction = [](ObstacleUpdateFunctionData& data)
@@ -304,12 +315,12 @@ namespace gd {
 		levelSpec.Index = 5;
 		levelSpec.BallPosition = { -1.0f, 0.0f };
 		levelSpec.HolePosition = { 1.0f, 0.0f };
-		levelSpec.BackgroundTexture = Texture::Create("Assets/Textures/BG_Tiles_Ice.psd");
+		levelSpec.BackgroundTexture = ResourceManager::GetTexture("BG_Tiles_Ice");
 		levelSpec.GroundFriction = 0.5f * 0.5f; // slipperiness
 
 		Obstacle& obstacle1 = levelSpec.Obstacles.emplace_back();
 		obstacle1.Position = { 0.0f, 0.0f };
-		obstacle1.Texture = Texture::Create("Assets/Textures/Obstacle_Gray.psd");
+		obstacle1.Texture = ResourceManager::GetTexture("Obstacle_Gray");
 		obstacle1.Scale.x = 0.5f;
 		obstacle1.Scale.y = 0.5f;
 		obstacle1.UpdateFunction = [](ObstacleUpdateFunctionData& data)
@@ -320,7 +331,7 @@ namespace gd {
 
 		Obstacle& obstacle2 = levelSpec.Obstacles.emplace_back();
 		obstacle2.Position = { 0.0f, 0.5f };
-		obstacle2.Texture = Texture::Create("Assets/Textures/Obstacle_Gray.psd");
+		obstacle2.Texture = ResourceManager::GetTexture("Obstacle_Gray");
 		obstacle2.Scale.x = 0.5f;
 		obstacle2.Scale.y = 0.5f;
 		obstacle2.UpdateFunction = [](ObstacleUpdateFunctionData& data)
@@ -331,7 +342,7 @@ namespace gd {
 
 		Obstacle& obstacle3 = levelSpec.Obstacles.emplace_back();
 		obstacle3.Position = { 0.0f, -0.5f };
-		obstacle3.Texture = Texture::Create("Assets/Textures/Obstacle_Gray.psd");
+		obstacle3.Texture = ResourceManager::GetTexture("Obstacle_Gray");
 		obstacle3.Scale.x = 0.5f;
 		obstacle3.Scale.y = 0.5f;
 		obstacle3.UpdateFunction = [](ObstacleUpdateFunctionData& data)

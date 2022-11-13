@@ -1,6 +1,7 @@
 #include "GolfDashPCH.h"
 #include "Level.h"
 
+#include "ResourceManager.h"
 #include "GolfDash.h"
 
 namespace gd {
@@ -11,34 +12,34 @@ namespace gd {
 		m_Ball = Ball(this, specification.BallPosition);
 		m_Hole = Hole(this, specification.HolePosition);
 
-		m_LogoTexture = Texture::Create("Assets/Textures/Logo_Text.psd");
-		m_HoleInOneTexture = Texture::Create("Assets/Textures/HoleInOne_Text.psd");
+		m_LogoTexture = ResourceManager::GetTexture("Logo_Text");
+		m_HoleInOneTexture = ResourceManager::GetTexture("HoleInOne_Text");
 
 		m_FeedbackTextures[1] = {
-			Texture::Create("Assets/Textures/Feedback_Amazing.psd"),
-			Texture::Create("Assets/Textures/Feedback_Excellent.psd"),
-			Texture::Create("Assets/Textures/Feedback_Super.psd")
+			ResourceManager::GetTexture("Feedback_Amazing"),
+			ResourceManager::GetTexture("Feedback_Excellent"),
+			ResourceManager::GetTexture("Feedback_Super")
 		};
 
 		m_FeedbackTextures[2] = {
 
-			Texture::Create("Assets/Textures/Feedback_Great.psd"),
-			Texture::Create("Assets/Textures/Feedback_ThatsGreat.psd")
+			ResourceManager::GetTexture("Feedback_Great"),
+			ResourceManager::GetTexture("Feedback_ThatsGreat")
 		};
 
 		m_FeedbackTextures[3] = {
-			Texture::Create("Assets/Textures/Feedback_KeepItUp.psd"),
-			Texture::Create("Assets/Textures/Feedback_Fine.psd")
+			ResourceManager::GetTexture("Feedback_KeepItUp"),
+			ResourceManager::GetTexture("Feedback_Fine")
 		};
 
 		m_FeedbackTextures[4] = {
-			Texture::Create("Assets/Textures/Feedback_KeepItUp.psd"),
+			ResourceManager::GetTexture("Feedback_KeepItUp"),
 		};
 
-		std::string levelTexturePath = "Assets/Textures/Level" + std::to_string(specification.Index) + "_Text.psd";
-		m_LevelTexture = Texture::Create(levelTexturePath);
+		std::string levelTextureName = "Level" + std::to_string(specification.Index) + "_Text";
+		m_LevelTexture = ResourceManager::GetTexture(levelTextureName);
 	
-		m_BoostPadTexture = Texture::Create("Assets/Textures/BoostPad.psd");
+		m_BoostPadTexture = ResourceManager::GetTexture("BoostPad");
 	}
 
 	void Level::OnUpdate(float time, float deltaTime)
@@ -64,7 +65,7 @@ namespace gd {
 		{
 			if (m_Ball.GetStrokes() == 1)
 			{
-				glm::vec2 scale = glm::normalize(glm::vec2((float)m_HoleInOneTexture->GetWidth(), (float)m_HoleInOneTexture->GetHeight()));
+				glm::vec2 scale = glm::normalize(glm::vec2((float)m_HoleInOneTexture->GetInfo().Width, (float)m_HoleInOneTexture->GetInfo().Height));
 				scale *= 3.0f;
 				scale *= t;
 
@@ -80,7 +81,7 @@ namespace gd {
 		
 			if (m_CurrentFeedbackTexture)
 			{
-				glm::vec2 scale = glm::normalize(glm::vec2((float)m_CurrentFeedbackTexture->GetWidth(), (float)m_CurrentFeedbackTexture->GetHeight()));
+				glm::vec2 scale = glm::normalize(glm::vec2((float)m_CurrentFeedbackTexture->GetInfo().Width, (float)m_CurrentFeedbackTexture->GetInfo().Height));
 				scale *= t;
 
 				m_Renderer->RenderQuad({ 0.0f, -0.35f, -0.01f }, scale, glm::vec4(t * 0.8f, t * 0.8f, 0.6f - t * 0.8f, 1.0f), m_CurrentFeedbackTexture, 1.0f);
@@ -135,7 +136,7 @@ namespace gd {
 			return;
 		}
 
-		glm::vec2 scale = glm::normalize(glm::vec2((float)m_LevelTexture->GetWidth(), (float)m_LevelTexture->GetHeight()));
+		glm::vec2 scale = glm::normalize(glm::vec2((float)m_LevelTexture->GetInfo().Width, (float)m_LevelTexture->GetInfo().Height));
 		scale *= 0.5f;
 
 		glm::vec2 position = { 0.0f, 1.0f + 0.05f - (scale.y * 0.5f) };
@@ -149,7 +150,7 @@ namespace gd {
 
 	void Level::RenderLogo()
 	{
-		glm::vec2 logoScale = glm::normalize(glm::vec2((float)m_LogoTexture->GetWidth(), (float)m_LogoTexture->GetHeight()));
+		glm::vec2 logoScale = glm::normalize(glm::vec2((float)m_LogoTexture->GetInfo().Width, (float)m_LogoTexture->GetInfo().Height));
 		logoScale *= 0.5f;
 
 		glm::vec2 logoPosition = { -m_Camera.GetAspectRatio() + (logoScale.x * 0.5f), 1.0f + 0.05f - (logoScale.y * 0.5f) };

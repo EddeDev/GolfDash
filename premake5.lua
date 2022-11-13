@@ -8,7 +8,6 @@ workspace "GolfDash"
     objdir ("Build/Obj/%{cfg.buildcfg}/%{prj.name}")
 
 project "GolfDash"
-    kind "ConsoleApp"
     language "C++"
     cppdialect "C++latest"
     location "GolfDash"
@@ -51,16 +50,19 @@ project "GolfDash"
         defines "GD_OS_WINDOWS"
 
     filter "configurations:Debug"
+        kind "ConsoleApp"
         defines "GD_DEBUG"
         runtime "Debug"
         symbols "On"
 
     filter "configurations:Release"
+        kind "ConsoleApp"
         defines { "GD_RELEASE", "NDEBUG" }
         runtime "Release"
         optimize "On"
 
     filter "configurations:Dist"
+        kind "WindowedApp"
         defines { "GD_DIST", "NDEBUG" }
         runtime "Release"
         optimize "On"

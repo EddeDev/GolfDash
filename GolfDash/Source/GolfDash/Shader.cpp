@@ -32,10 +32,19 @@ namespace gd {
 		return shaderID;
 	}
 
-	Shader::Shader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
+	Shader::Shader(const ShaderInfo& info)
+		: m_Info(info)
 	{
-		std::string vertexShaderSource = FileUtils::ReadFile(vertexShaderPath);
-		std::string fragmentShaderSource = FileUtils::ReadFile(fragmentShaderPath);
+		if (m_Info.Binary.empty())
+			LoadShaderFromSource();
+		else
+			LoadShaderFromBinary();
+	}
+
+	void Shader::LoadShaderFromSource()
+	{
+		std::string vertexShaderSource = FileUtils::ReadFile(m_Info.VertexShaderPath);
+		std::string fragmentShaderSource = FileUtils::ReadFile(m_Info.FragmentShaderPath);
 
 		uint32 vertexShaderID = CreateShader(GL_VERTEX_SHADER, vertexShaderSource);
 		uint32 fragmentShaderID = CreateShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
@@ -64,11 +73,41 @@ namespace gd {
 			return;
 		}
 
+		// Get binary
+		{
+			int32 length = 0;
+			glGetProgramiv(m_ProgramID, GL_PROGRAM_BINARY_LENGTH, &length);
+			m_Info.Binary.resize(length);
+
+			glGetProgramBinary(m_ProgramID, length, nullptr, &m_Info.BinaryFormat, m_Info.Binary.data());
+		}
+
 		glDetachShader(m_ProgramID, vertexShaderID);
 		glDetachShader(m_ProgramID, fragmentShaderID);
 
 		glDeleteShader(vertexShaderID);
 		glDeleteShader(fragmentShaderID);
+	}
+
+	void Shader::LoadShaderFromBinary()
+	{
+		m_ProgramID = glCreateProgram();
+		glProgramBinary(m_ProgramID, m_Info.BinaryFormat, m_Info.Binary.data(), m_Info.Binary.size());
+
+		int32 isLinked = 0;
+		glGetProgramiv(m_ProgramID, GL_LINK_STATUS, &isLinked);
+		if (isLinked == GL_FALSE)
+		{
+			int32 maxLength = 0;
+			glGetProgramiv(m_ProgramID, GL_INFO_LOG_LENGTH, &maxLength);
+
+			std::vector<char> infoLog(maxLength);
+			glGetProgramInfoLog(m_ProgramID, maxLength, &maxLength, infoLog.data());
+			std::cerr << infoLog.data() << std::endl;
+
+			glDeleteProgram(m_ProgramID);
+			return;
+		}
 	}
 
 	Shader::~Shader()

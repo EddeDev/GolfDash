@@ -2,6 +2,7 @@
 #include "Renderer.h"
 
 #include "GolfDash.h"
+#include "ResourceManager.h"
 
 #include "glad/glad.h"
 
@@ -18,7 +19,7 @@ namespace gd {
 
 		// Quad
 		{
-			m_QuadShader = Ref<Shader>::Create("Assets/Shaders/Quad_Vertex.glsl", "Assets/Shaders/Quad_Fragment.glsl");
+			m_QuadShader = ResourceManager::GetShader("Quad");
 
 			PipelineConfig pipelineConfig;
 			pipelineConfig.Topology = PrimitiveTopology::Triangles;
@@ -72,7 +73,7 @@ namespace gd {
 
 		// Line
 		{
-			m_LineShader = Ref<Shader>::Create("Assets/Shaders/Line_Vertex.glsl", "Assets/Shaders/Line_Fragment.glsl");
+			m_LineShader = ResourceManager::GetShader("Line");
 
 			PipelineConfig pipelineConfig;
 			pipelineConfig.Topology = PrimitiveTopology::Lines;
@@ -99,7 +100,7 @@ namespace gd {
 
 		// Composite
 		{
-			m_CompositeShader = Ref<Shader>::Create("Assets/Shaders/Composite_Vertex.glsl", "Assets/Shaders/Composite_Fragment.glsl");
+			m_CompositeShader = ResourceManager::GetShader("Composite");
 
 			FramebufferConfig framebufferConfig;
 			framebufferConfig.SwapchainTarget = true;
@@ -138,7 +139,13 @@ namespace gd {
 
 		// White texture
 		uint32 whiteTextureData = 0xffffffff;
-		m_TextureSlots[0] = Ref<Texture>::Create(1, 1, &whiteTextureData);
+
+		TextureInfo whiteTextureInfo;
+		whiteTextureInfo.Width = 1;
+		whiteTextureInfo.Height = 1;
+		whiteTextureInfo.Data = (uint8*)&whiteTextureData;
+
+		m_TextureSlots[0] = Ref<Texture>::Create(whiteTextureInfo);
 	}
 
 	Renderer::~Renderer()

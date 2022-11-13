@@ -28,7 +28,7 @@ layout(location = 0) uniform Uniforms u_Uniforms;
 void main()
 {
 	Output.Color = a_Color;
-	Output.TexCoord = a_TexCoord;
+	Output.TexCoord = vec2(a_TexCoord.x, 1.0 - a_TexCoord.y);
 	Output.TilingFactor = a_TilingFactor;
 	Output.Wave = a_Wave;
 	v_TexIndex = a_TexIndex;
