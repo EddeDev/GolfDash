@@ -114,7 +114,9 @@ namespace gd {
 		void SetViewportSize(uint32 width, uint32 height);
 
 		void BindLevel(LevelType type, Ref<Level> level, bool setActive = false);
+
 		void SetActiveLevelType(LevelType type);
+		LevelType GetActiveLevelType() { return m_ActiveLevelType; }
 
 		Ref<Level> GetActiveLevel() const;
 		Ref<Level> GetLevel(LevelType type) const;

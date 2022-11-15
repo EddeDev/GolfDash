@@ -2,6 +2,7 @@
 #include "ResourceManager.h"
 
 #include "GolfDash.h"
+#include "FileUtils.h"
 
 #include <filesystem>
 
@@ -31,10 +32,9 @@ namespace gd {
 
 	struct ShaderData
 	{
-		uint64 Size;
-		uint32 BinaryFormat;
-
-		uint32 NameSize;
+		uint64 VertexShaderSourceSize;
+		uint64 FragmentShaderSourceSize;
+		uint64 NameSize;
 		// data
 	};
 
@@ -43,7 +43,7 @@ namespace gd {
 		int32 Width;
 		int32 Height;
 		int32 Channels;
-		uint32 NameSize;
+		uint64 NameSize;
 		// data
 	};
 
@@ -67,7 +67,8 @@ namespace gd {
 
 		std::vector<ShaderData> shaderDataHeaders(header.NumShaders);
 		std::vector<std::string> shaderNames(header.NumShaders);
-		std::vector<std::vector<uint8>> shaderBinaries(header.NumShaders);
+		std::vector<std::string> vertexShaderSources(header.NumShaders);
+		std::vector<std::string> fragmentShaderSources(header.NumShaders);
 
 		for (uint32 i = 0; i < header.NumShaders; i++)
 		{
@@ -78,9 +79,13 @@ namespace gd {
 			name.resize(data.NameSize);
 			in.read(name.data(), name.size());
 
-			auto& binaryData = shaderBinaries[i];
-			binaryData.resize(data.Size);
-			in.read((char*)binaryData.data(), binaryData.size());
+			auto& vertexShaderSource = vertexShaderSources[i];
+			vertexShaderSource.resize(data.VertexShaderSourceSize);
+			in.read(vertexShaderSource.data(), vertexShaderSource.size());
+
+			auto& fragmentShaderSource = fragmentShaderSources[i];
+			fragmentShaderSource.resize(data.FragmentShaderSourceSize);
+			in.read(fragmentShaderSource.data(), fragmentShaderSource.size());
 		}
 
 		std::vector<TextureData> textureDataHeaders(header.NumTextures);
@@ -109,8 +114,8 @@ namespace gd {
 			std::string shaderName = shaderNames[i];
 
 			ShaderInfo info;
-			info.Binary = shaderBinaries[i];
-			info.BinaryFormat = shaderDataHeaders[i].BinaryFormat;
+			info.VertexShaderSource = vertexShaderSources[i];
+			info.FragmentShaderSource = fragmentShaderSources[i];
 
 			shaderInfos[shaderName] = info;
 		}
@@ -127,7 +132,7 @@ namespace gd {
 
 			textureInfos[textureName] = info;
 		}
-		
+
 #else
 		for (auto& dirEntry : std::filesystem::recursive_directory_iterator("Assets"))
 		{
@@ -143,12 +148,12 @@ namespace gd {
 				{
 					if (shaderInfos.find(shaderName) != shaderInfos.end())
 					{
-						shaderInfos.at(shaderName).VertexShaderPath = path.string();
+						shaderInfos.at(shaderName).VertexShaderSource = FileUtils::ReadFile(path.string());
 					}
 					else
 					{
 						ShaderInfo info;
-						info.VertexShaderPath = path.string();
+						info.VertexShaderSource = FileUtils::ReadFile(path.string());
 
 						shaderInfos[shaderName] = info;
 					}
@@ -157,12 +162,12 @@ namespace gd {
 				{
 					if (shaderInfos.find(shaderName) != shaderInfos.end())
 					{
-						shaderInfos.at(shaderName).FragmentShaderPath = path.string();
+						shaderInfos.at(shaderName).FragmentShaderSource = FileUtils::ReadFile(path.string());
 					}
 					else
 					{
 						ShaderInfo info;
-						info.FragmentShaderPath = path.string();
+						info.FragmentShaderSource = FileUtils::ReadFile(path.string());
 
 						shaderInfos[shaderName] = info;
 					}
@@ -205,13 +210,14 @@ namespace gd {
 			auto& info = shader->GetInfo();
 
 			ShaderData data;
-			data.Size = info.Binary.size();
-			data.BinaryFormat = info.BinaryFormat;
+			data.VertexShaderSourceSize = static_cast<uint64>(info.VertexShaderSource.size());
+			data.FragmentShaderSourceSize = static_cast<uint64>(info.FragmentShaderSource.size());
 			data.NameSize = shaderName.size();
 
 			out.write((char*)&data, sizeof(ShaderData));
 			out.write(shaderName.data(), shaderName.size());
-			out.write((char*)info.Binary.data(), info.Binary.size());
+			out.write(info.VertexShaderSource.c_str(), info.VertexShaderSource.size());
+			out.write(info.FragmentShaderSource.c_str(), info.FragmentShaderSource.size());
 		}
 
 		for (auto& [textureName, texture] : s_Textures)

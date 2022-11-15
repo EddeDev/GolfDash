@@ -13,6 +13,8 @@ project "GolfDash"
     location "GolfDash"
     staticruntime "Off"
 
+    icon "%{prj.name}/GolfDash.ico"
+
     pchheader "GolfDashPCH.h"
     pchsource "%{prj.name}/Source/GolfDashPCH.cpp"
 

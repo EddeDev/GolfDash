@@ -13,7 +13,7 @@ namespace gd {
 		windowConfig.Width = 1920;
 		windowConfig.Height = 1080;
 		windowConfig.Title = "Golf Dash";
-		windowConfig.Fullscreen = false;
+		windowConfig.Fullscreen = true;
 		windowConfig.VSync = true;
 
 		m_Window = Ref<Window>::Create(windowConfig);
@@ -28,7 +28,6 @@ namespace gd {
 		});
 
 		m_Mouse = Ref<Mouse>::Create(m_Window);
-
 		// Create level manager
 		m_LevelManager = Ref<LevelManager>::Create();
 		m_LevelManager->BindLevel(LevelType::Level1, CreateLevel1(), true);
@@ -205,7 +204,7 @@ namespace gd {
 		levelSpec.Index = 3;
 		levelSpec.BallPosition = { -1.0f, -0.5f };
 		levelSpec.HolePosition = { 1.0f, -0.75f };
-		levelSpec.BackgroundTexture = ResourceManager::GetTexture("Assets/Textures/BG_Tiles_Default");
+		levelSpec.BackgroundTexture = ResourceManager::GetTexture("BG_Tiles_Default");
 
 		BoostPad& boostPad1 = levelSpec.BoostPads.emplace_back();
 		boostPad1.Position = { -1.5f, 0.5f };
@@ -217,7 +216,7 @@ namespace gd {
 		boostPad2.Scale = { 0.5f, 0.5f };
 		boostPad2.Rotation = 180.0f;
 		
-		Ref<Texture> obstacleTexture = ResourceManager::GetTexture("Assets/Textures/Obstacle_Gray");
+		Ref<Texture> obstacleTexture = ResourceManager::GetTexture("Obstacle_Gray");
 
 		Obstacle& obstacle1 = levelSpec.Obstacles.emplace_back();
 		obstacle1.Position = { -1.0f, 0.0f };

@@ -326,6 +326,9 @@ namespace gd {
 			}
 		}
 
+		if (textureIndex == 0.0f)
+			std::cout << "Using white texture" << std::endl;
+
 		for (size_t i = 0; i < 4; i++)
 		{
 			m_QuadVertexPointer->Position = transform * m_QuadVertexPositions[i];

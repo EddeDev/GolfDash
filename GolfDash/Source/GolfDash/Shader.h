@@ -4,11 +4,8 @@ namespace gd {
 	
 	struct ShaderInfo
 	{
-		std::string VertexShaderPath;
-		std::string FragmentShaderPath;
-
-		std::vector<uint8> Binary;
-		uint32 BinaryFormat = 0;
+		std::string VertexShaderSource;
+		std::string FragmentShaderSource;
 	};
 
 	class Shader : public ReferenceCounted
@@ -26,9 +23,6 @@ namespace gd {
 
 		ShaderInfo& GetInfo() { return m_Info; }
 		const ShaderInfo& GetInfo() const { return m_Info; }
-	private:
-		void LoadShaderFromSource();
-		void LoadShaderFromBinary();
 	private:
 		uint32 m_ProgramID = 0;
 		ShaderInfo m_Info;
