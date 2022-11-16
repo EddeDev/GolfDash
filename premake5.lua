@@ -29,6 +29,7 @@ project "GolfDash"
 
         "%{prj.name}/Libraries/glm/glm/**.hpp",
         "%{prj.name}/Libraries/glm/glm/**.inl",
+
         "%{prj.name}/Libraries/stb_image/stb_image.h"
     }
     
@@ -37,6 +38,7 @@ project "GolfDash"
         "%{prj.name}/Source",
         "%{prj.name}/Libraries/GLFW/include",
         "%{prj.name}/Libraries/Glad/include",
+        "%{prj.name}/Libraries/zlib/include",
         "%{prj.name}/Libraries/glm",
         "%{prj.name}/Libraries/stb_image"
     }
@@ -44,8 +46,11 @@ project "GolfDash"
     links
     {
         "GLFW",
-        "Glad"
+        "Glad",
+        "zlib"
     }
+    
+    defines "_CRT_SECURE_NO_WARNINGS"
 
     filter "system:Windows"
         systemversion "latest"
@@ -73,4 +78,5 @@ project "GolfDash"
 group "Libraries"
     include "GolfDash/Libraries/GLFW"
     include "GolfDash/Libraries/Glad"
+    include "GolfDash/Libraries/zlib"
 group ""

@@ -6,6 +6,8 @@
 
 #include <filesystem>
 
+#include <zlib.h>
+
 namespace gd {
 
 	namespace Utils {
@@ -21,6 +23,8 @@ namespace gd {
 	}
 
 	static constexpr uint64 s_HeaderIdentifier = 0x37EB7D773575C;
+
+	static const char* s_AssetPackFilepath = "Assets.gd";
 
 	struct AssetPackHeader
 	{
@@ -53,10 +57,10 @@ namespace gd {
 		std::unordered_map<std::string, TextureInfo> textureInfos;
 
 #ifdef GD_DIST
-		std::ifstream in("Assets.gd", std::ios::binary);
+		gzFile file = gzopen(s_AssetPackFilepath, "rb");
 
 		AssetPackHeader header;
-		in.read((char*)&header, sizeof(AssetPackHeader));
+		gzread(file, &header, sizeof(AssetPackHeader));
 		if (header.HeaderIdentifier != s_HeaderIdentifier)
 		{
 			std::cerr << "Invalid file!" << std::endl;
@@ -73,19 +77,19 @@ namespace gd {
 		for (uint32 i = 0; i < header.NumShaders; i++)
 		{
 			auto& data = shaderDataHeaders[i];
-			in.read((char*)&data, sizeof(ShaderData));
+			gzread(file, &data, sizeof(ShaderData));
 
 			auto& name = shaderNames[i];
 			name.resize(data.NameSize);
-			in.read(name.data(), name.size());
+			gzread(file, name.data(), name.size());
 
 			auto& vertexShaderSource = vertexShaderSources[i];
 			vertexShaderSource.resize(data.VertexShaderSourceSize);
-			in.read(vertexShaderSource.data(), vertexShaderSource.size());
+			gzread(file, vertexShaderSource.data(), vertexShaderSource.size());
 
 			auto& fragmentShaderSource = fragmentShaderSources[i];
 			fragmentShaderSource.resize(data.FragmentShaderSourceSize);
-			in.read(fragmentShaderSource.data(), fragmentShaderSource.size());
+			gzread(file, fragmentShaderSource.data(), fragmentShaderSource.size());
 		}
 
 		std::vector<TextureData> textureDataHeaders(header.NumTextures);
@@ -95,19 +99,19 @@ namespace gd {
 		for (uint32 i = 0; i < header.NumTextures; i++)
 		{
 			auto& data = textureDataHeaders[i];
-			in.read((char*)&data, sizeof(TextureData));
+			gzread(file, &data, sizeof(TextureData));
 
 			auto& name = textureNames[i];
 			name.resize(data.NameSize);
-			in.read(name.data(), name.size());
+			gzread(file, name.data(), name.size());
 
 			auto& binaryData = textureDataStorage[i];
 			size_t dataSize = data.Width * data.Height * data.Channels;
 			binaryData.resize(dataSize);
-			in.read((char*)binaryData.data(), binaryData.size());
+			gzread(file, binaryData.data(), binaryData.size());
 		}
 
-		in.close();
+		gzclose(file);
 
 		for (uint32 i = 0; i < header.NumShaders; i++)
 		{
@@ -195,15 +199,14 @@ namespace gd {
 	void ResourceManager::Shutdown()
 	{
 #ifndef GD_DIST
-		std::string filename("Assets.gd");
-		std::ofstream out(filename.c_str(), std::ios::binary);
+		gzFile file = gzopen(s_AssetPackFilepath, "wb");
 
 		AssetPackHeader header;
 		header.HeaderIdentifier = s_HeaderIdentifier;
 		header.NumShaders = static_cast<uint32>(s_Shaders.size());
 		header.NumTextures = static_cast<uint32>(s_Textures.size());
 
-		out.write((char*)&header, sizeof(AssetPackHeader));
+		gzwrite(file, &header, sizeof(AssetPackHeader));
 
 		for (auto& [shaderName, shader] : s_Shaders)
 		{
@@ -214,10 +217,10 @@ namespace gd {
 			data.FragmentShaderSourceSize = static_cast<uint64>(info.FragmentShaderSource.size());
 			data.NameSize = shaderName.size();
 
-			out.write((char*)&data, sizeof(ShaderData));
-			out.write(shaderName.data(), shaderName.size());
-			out.write(info.VertexShaderSource.c_str(), info.VertexShaderSource.size());
-			out.write(info.FragmentShaderSource.c_str(), info.FragmentShaderSource.size());
+			gzwrite(file, &data, sizeof(ShaderData));
+			gzwrite(file, shaderName.data(), shaderName.size());
+			gzwrite(file, info.VertexShaderSource.c_str(), info.VertexShaderSource.size());
+			gzwrite(file, info.FragmentShaderSource.c_str(), info.FragmentShaderSource.size());
 		}
 
 		for (auto& [textureName, texture] : s_Textures)
@@ -238,12 +241,12 @@ namespace gd {
 
 			size_t dataSize = data.Width * data.Height * data.Channels;
 
-			out.write((char*)&data, sizeof(TextureData));
-			out.write(textureName.data(), textureName.size());
-			out.write((char*)info.Data, dataSize);
+			gzwrite(file, &data, sizeof(TextureData));
+			gzwrite(file, textureName.data(), textureName.size());
+			gzwrite(file, info.Data, dataSize);
 		}
-
-		out.close();
+		
+		gzclose(file);
 #endif
 	}
 
