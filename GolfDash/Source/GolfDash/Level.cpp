@@ -104,7 +104,7 @@ namespace gd {
 		uint32 feedbackTextureIndex = glm::clamp(m_Ball.GetStrokes(), static_cast<uint32>(1), static_cast<uint32>(m_FeedbackTextures.size()) - 1);
 		std::vector<Ref<Texture>> feedbacks = m_FeedbackTextures.at(feedbackTextureIndex);
 
-		std::uniform_int_distribution<> dist(0, feedbacks.size() - 1);
+		std::uniform_int_distribution<> dist(0, static_cast<int32>(feedbacks.size() - 1));
 		return feedbacks[dist(gen)];
 	}
 

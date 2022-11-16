@@ -218,9 +218,9 @@ namespace gd {
 			data.NameSize = shaderName.size();
 
 			gzwrite(file, &data, sizeof(ShaderData));
-			gzwrite(file, shaderName.data(), shaderName.size());
-			gzwrite(file, info.VertexShaderSource.c_str(), info.VertexShaderSource.size());
-			gzwrite(file, info.FragmentShaderSource.c_str(), info.FragmentShaderSource.size());
+			gzwrite(file, shaderName.data(), static_cast<uint32>(shaderName.size()));
+			gzwrite(file, info.VertexShaderSource.c_str(), static_cast<uint32>(info.VertexShaderSource.size()));
+			gzwrite(file, info.FragmentShaderSource.c_str(), static_cast<uint32>(info.FragmentShaderSource.size()));
 		}
 
 		for (auto& [textureName, texture] : s_Textures)
@@ -239,10 +239,10 @@ namespace gd {
 				continue;
 			}
 
-			size_t dataSize = data.Width * data.Height * data.Channels;
+			uint32 dataSize = data.Width * data.Height * data.Channels;
 
 			gzwrite(file, &data, sizeof(TextureData));
-			gzwrite(file, textureName.data(), textureName.size());
+			gzwrite(file, textureName.data(), static_cast<uint32>(textureName.size()));
 			gzwrite(file, info.Data, dataSize);
 		}
 		
