@@ -17,10 +17,10 @@ namespace gd {
 		Renderer();
 		virtual ~Renderer();
 
-		void BeginFrame(const Camera& camera);
-		void EndFrame() const;
+		void BeginScene(const Camera& camera);
+		void EndScene() const;
 
-		void RenderQuad(const glm::vec3& position, const glm::vec2& scale, const glm::vec4& color, Ref<Texture> texture, float tilingFactor = 1.0f, bool waveEffect = false);
+		void RenderQuad(const glm::vec3& position, const glm::vec2& scale, const glm::vec4& color, Ref<Texture> texture = nullptr, float tilingFactor = 1.0f, bool waveEffect = false);
 		void RenderQuad(const glm::vec3& position, const glm::vec2& scale, float rotation, const glm::vec4& color, Ref<Texture> texture, float tilingFactor = 1.0f, bool waveEffect = false);
 		void FlushQuads();
 

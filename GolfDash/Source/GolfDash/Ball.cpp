@@ -7,18 +7,6 @@
 
 namespace gd {
 
-	namespace Utils {
-
-		static glm::vec3 EulerAnglesToDirection(const glm::vec3& eulerAngles)
-		{
-			glm::mat4 rotationMatrix = glm::toMat4(glm::quat(glm::radians(eulerAngles)));
-			glm::mat4 offsetMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-			glm::mat4 transform = rotationMatrix * offsetMatrix;
-			return glm::normalize(-transform[3]);
-		}
-
-	}
-
 #define PRINT(message) std::cout << message << std::endl
 
 	Ball::Ball(Ref<Level> level, const glm::vec2& position)
@@ -56,18 +44,20 @@ namespace gd {
 #endif
 		}
 
-		const float maxDragDistance = 1.0f;
-
 		if (m_IsDragging)
 		{
 			glm::vec2 begin = orthoMousePos;
 			glm::vec2 end = m_Position;
 
-			float distance = glm::distance(orthoMousePos, m_Position);
-			if (distance < maxDragDistance)
-			{
-				m_Level->GetRenderer()->RenderLine({begin, -0.1f}, glm::vec4(0.0f), {end, -0.1f}, glm::vec4(1.0f));
-			}
+			m_DragLength = glm::distance(orthoMousePos, m_Position);
+			m_DragLength = glm::clamp(m_DragLength, 0.0f, m_MaxDragLength);
+
+			if (m_DragLength < m_MaxDragLength)
+				m_Level->GetRenderer()->RenderLine({ begin, -0.1f }, glm::vec4(glm::vec3(0.0f), 1.0f), { end, -0.1f }, glm::vec4(glm::vec3(0.0f), 1.0f));
+		}
+		else
+		{
+			m_DragLength = 0.0f;
 		}
 
 		const float epsilon = 0.0001f;
@@ -81,7 +71,7 @@ namespace gd {
 				{
 					// PRINT("Ball was dragged within it's boundaries (no force applied!)");
 				}
-				else if (distance >= maxDragDistance)
+				else if (distance >= m_MaxDragLength)
 				{
 					// PRINT("Reached the max distance!");
 				}

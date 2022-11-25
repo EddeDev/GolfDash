@@ -153,7 +153,7 @@ namespace gd {
 		delete[] m_QuadVertexStorage;
 	}
 
-	void Renderer::BeginFrame(const Camera& camera)
+	void Renderer::BeginScene(const Camera& camera)
 	{
 		m_ViewProjectionMatrix = camera.ViewProjectionMatrix;
 
@@ -166,7 +166,7 @@ namespace gd {
 		m_TextureSlotIndex = 1;
 	}
 
-	void Renderer::EndFrame() const
+	void Renderer::EndScene() const
 	{
 		m_GeometryFramebuffer->Bind();
 
@@ -294,7 +294,7 @@ namespace gd {
 		m_QuadIndexCount += 6;
 	}
 
-	void Renderer::RenderQuad(const glm::vec3& position, const glm::vec2& scale, float rotation, const glm::vec4& color, Ref<Texture> texture, float tilingFactor /*= 1.0f*/, bool waveEffect /*= false*/)
+	void Renderer::RenderQuad(const glm::vec3& position, const glm::vec2& scale, float rotation, const glm::vec4& color, Ref<Texture> texture, float tilingFactor, bool waveEffect)
 	{
 		if (m_QuadIndexCount >= s_MaxQuadIndices)
 			FlushQuads();
@@ -325,9 +325,6 @@ namespace gd {
 				m_TextureSlotIndex++;
 			}
 		}
-
-		if (textureIndex == 0.0f)
-			std::cout << "Using white texture" << std::endl;
 
 		for (size_t i = 0; i < 4; i++)
 		{
@@ -362,8 +359,6 @@ namespace gd {
 		
 		m_LineVertexPointer = m_LineVertexStorage;
 		m_LineIndexCount = 0;
-
-		m_TextureSlotIndex = 1;
 	}
 
 	void Renderer::RenderLine(const glm::vec3& position1, const glm::vec4& color1, const glm::vec3& position2, const glm::vec4& color2)

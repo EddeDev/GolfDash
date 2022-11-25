@@ -58,7 +58,7 @@ namespace gd {
 		glTextureStorage2D(m_TextureID, 1, internalFormat, m_Info.Width, m_Info.Height);
 
 		glTextureSubImage2D(m_TextureID, 0, 0, 0, m_Info.Width, m_Info.Height, format, GL_UNSIGNED_BYTE, static_cast<const void*>(m_Info.Data));
-		// glGenerateTextureMipmap(m_TextureID);
+		glGenerateTextureMipmap(m_TextureID);
 
 		glTextureParameteri(m_TextureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTextureParameteri(m_TextureID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

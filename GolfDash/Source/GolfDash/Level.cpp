@@ -44,11 +44,35 @@ namespace gd {
 
 	void Level::OnUpdate(float time, float deltaTime)
 	{
-		m_Renderer->BeginFrame(m_Camera);
+		m_Renderer->BeginScene(m_Camera);
+
+		// Overlays
+		{
+			// RenderLevelText();
+			// RenderLogo();
+
+			{
+				glm::vec2 scale = { m_Ball.GetDragLength(), 0.05f };
+				glm::vec2 offset = { 0.025f, 0.025f };
+				glm::vec2 position = {
+					-m_Camera.GetAspectRatio() + (scale.x * 0.5f) + offset.x,
+					1.0f - (scale.y * 0.5f) - offset.y
+				};
+				m_Renderer->RenderQuad({ position, -0.01f }, scale, { 0.2f, 0.2f, 0.8f, 1.0f });
+			}
+		
+			{
+				glm::vec2 scale = { m_Ball.GetMaxDragLength(), 0.05f };
+				glm::vec2 offset = { 0.025f, 0.025f };
+				glm::vec2 position = {
+					-m_Camera.GetAspectRatio() + (scale.x * 0.5f) + offset.x,
+					1.0f - (scale.y * 0.5f) - offset.y
+				};
+				m_Renderer->RenderQuad({ position, -0.011f }, { 1.0f, scale.y }, { 0.1f, 0.1f, 0.1f, 1.0f });
+			}
+		}
 
 		RenderBackground();
-		RenderLevelText();
-		RenderLogo();
 		RenderBoostPads();
 		UpdateAndRenderObstacles(time, deltaTime);
 		m_Ball.OnUpdate(time, deltaTime);
@@ -88,7 +112,7 @@ namespace gd {
 			}
 		}
 
-		m_Renderer->EndFrame();
+		m_Renderer->EndScene();
 	}
 
 	void Level::Clear()
